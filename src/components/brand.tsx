@@ -1,0 +1,4 @@
+import Link from 'next/link';
+export function Brand() { return <Link className="brand" href="/" aria-label="LavaYA!, inicio"><span className="brand-symbol">≈</span>LavaYA<span className="brand-dot">!</span></Link>; }
+export function Nav() { return <header className="nav wrap"><Brand/><nav aria-label="Principal"><a href="/#funciones">Cómo funciona</a><a href="/#precio">Precio</a><Link href="/ingresar">Ingresar</Link><Link className="button small" href="/registro">Empezar <span>↗</span></Link></nav></header>; }
+export function Footer() { return <footer className="footer wrap"><div><Brand/><p>Menos planillas. Más control.</p></div><div><Link href="/demo">Explorar demo</Link><Link href="/terminos">Condiciones</Link><Link href="/privacidad">Privacidad</Link></div><p>© {new Date().getFullYear()} LavaYA!</p></footer>; }
