@@ -11,13 +11,11 @@ export const auth = betterAuth({
   ...(isDbConfigured() ? { database: getPool() } : {}),
   baseURL: siteUrl,
   secret: authSecret,
-  emailAndPassword: {
-    enabled: true,
-    minPasswordLength: 10,
-    maxPasswordLength: 128,
-    requireEmailVerification: false,
-    sendResetPassword: async ({ user, url }) => {
-      console.log(`[LavaYA! Auth] Enlace de restablecimiento generado para ${user.email}: ${url}`);
+  user: {
+    fields: {
+      emailVerified: 'email_verified',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
   },
   session: {
@@ -26,6 +24,44 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60, // 5 minutes cache
+    },
+    fields: {
+      userId: 'user_id',
+      expiresAt: 'expires_at',
+      ipAddress: 'ip_address',
+      userAgent: 'user_agent',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
+  },
+  account: {
+    fields: {
+      userId: 'user_id',
+      accountId: 'account_id',
+      providerId: 'provider_id',
+      accessToken: 'access_token',
+      refreshToken: 'refresh_token',
+      accessTokenExpiresAt: 'access_token_expires_at',
+      refreshTokenExpiresAt: 'refresh_token_expires_at',
+      idToken: 'id_token',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
+  },
+  verification: {
+    fields: {
+      expiresAt: 'expires_at',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
+  },
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 10,
+    maxPasswordLength: 128,
+    requireEmailVerification: false,
+    sendResetPassword: async ({ user, url }) => {
+      console.log(`[LavaYA! Auth] Enlace de restablecimiento generado para ${user.email}: ${url}`);
     },
   },
   rateLimit: {
