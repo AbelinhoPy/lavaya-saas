@@ -3,10 +3,29 @@ const fs = require('fs');
 const path = require('path');
 const { Pool } = require('@neondatabase/serverless');
 
+// Automatically read .env.local if DATABASE_URL is not in process.env
+const envLocalPath = path.join(__dirname, '..', '.env.local');
+if (!process.env.DATABASE_URL && fs.existsSync(envLocalPath)) {
+  const envContent = fs.readFileSync(envLocalPath, 'utf8');
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx > 0) {
+      const key = trimmed.substring(0, eqIdx).trim();
+      let val = trimmed.substring(eqIdx + 1).trim();
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.substring(1, val.length - 1);
+      }
+      process.env[key] = val;
+    }
+  }
+}
+
 async function runMigrations() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
-    console.warn('⚠️  DATABASE_URL no está configurada en el entorno.');
+    console.warn('⚠️  DATABASE_URL no está configurada en el entorno ni en .env.local.');
     console.warn('   Para aplicar migraciones en Neon, ejecutá:');
     console.warn('   $env:DATABASE_URL="postgres://..." ; npm run db:migrate');
     return;
