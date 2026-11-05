@@ -1,6 +1,7 @@
 import 'server-only';
 import { betterAuth } from 'better-auth';
 import { getPool, isDbConfigured } from './db';
+import { sendVerificationEmail, sendPasswordResetEmail } from './email';
 
 const authSecret =
   process.env.BETTER_AUTH_SECRET ||
@@ -55,13 +56,28 @@ export const auth = betterAuth({
       updatedAt: 'updated_at',
     },
   },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendVerificationEmail({
+        email: user.email,
+        name: user.name,
+        url,
+      });
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 10,
     maxPasswordLength: 128,
-    requireEmailVerification: false,
+    requireEmailVerification: process.env.REQUIRE_EMAIL_VERIFICATION === 'true',
     sendResetPassword: async ({ user, url }) => {
-      console.log(`[LavaYA! Auth] Enlace de restablecimiento generado para ${user.email}: ${url}`);
+      await sendPasswordResetEmail({
+        email: user.email,
+        name: user.name,
+        url,
+      });
     },
   },
   rateLimit: {
