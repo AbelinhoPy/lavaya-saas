@@ -7,7 +7,8 @@ Plataforma SaaS full-stack para dueños de lavaderos de autos y motos. Nombre co
 - **Autenticación:** Better Auth integrado nativamente sobre Neon PostgreSQL (sesiones en servidor, cookies httpOnly / secure / sameSite, protección anti-abuso y recuperación de contraseña).
 - **Procesador de pagos:** Paddle (Merchant of Record) con suscripción multi-plan (mensual, semestral, anual), prueba de 7 días con tarjeta requerida, firmas HMAC SHA256, deduplicación y bloqueos consultivos (advisory locks).
 - **Moneda operativa:** Guaraníes (Gs.) para precios, servicios, adicionales, cobros y caja diaria; suscripción al software en USD.
-- **Hosting recomendado:** Vercel (subdominio inicial `.vercel.app`).
+- **Hosting de producción:** Vercel (https://lavaya-toman13.vercel.app).
+- **Repositorio de producción:** https://github.com/AbelinhoPy/lavaya-saas
 
 ---
 
