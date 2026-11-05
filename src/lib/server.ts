@@ -1,41 +1,121 @@
 import 'server-only';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { query, isDbConfigured } from './db';
+import { auth } from './auth';
 
-export function authConfigured() { return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY); }
-export function serverDB() {
- if (!authConfigured()) throw new Error('Servicio de cuentas todavía no configurado. Podés explorar la demo sin registrarte.');
- const jar = cookies();
- return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
-  cookies: { getAll: () => jar.getAll(), setAll: (values: {name: string; value: string; options: CookieOptions}[]) => values.forEach(({ name, value, options }) => jar.set(name, value, { ...options, httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' })) }
- });
+export interface AuthenticatedAccount {
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  };
+  business: {
+    id: string;
+    name: string;
+    owner_id: string;
+  };
+  role: 'owner' | 'operator';
 }
-export function adminDB() {
- if (!process.env.SUPABASE_SERVICE_ROLE_KEY) throw new Error('Servicio interno no configurado.');
- return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+
+export function authConfigured(): boolean {
+  return isDbConfigured();
 }
+
 export function originCheck(req: NextRequest) {
- const origin = req.headers.get('origin');
- const expected = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3100';
- if (!origin || origin !== new URL(expected).origin) throw new Error('Origen no permitido.');
+  const origin = req.headers.get('origin');
+  const expected = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3100';
+  if (!origin || origin !== new URL(expected).origin) {
+    throw new Error('Origen no permitido.');
+  }
 }
-export async function account() {
- const db = serverDB();
- const { data: { user }, error } = await db.auth.getUser();
- if (error || !user) throw new Error('Iniciá sesión para continuar.');
- const { data: business, error: businessError } = await db.from('businesses').select('id,name,owner_id').eq('owner_id', user.id).single();
- if (businessError || !business) throw new Error('No pudimos cargar tu negocio.');
- return { db, user, business };
+
+export async function account(): Promise<AuthenticatedAccount> {
+  if (!authConfigured()) {
+    throw new Error('Servicio de cuentas todavía no configurado. Podés explorar la demo sin registrarte.');
+  }
+
+  const reqHeaders = headers();
+  const session = await auth.api.getSession({ headers: reqHeaders });
+
+  if (!session || !session.user) {
+    throw new Error('Iniciá sesión para continuar.');
+  }
+
+  // Derive business_id strictly from authenticated session
+  const businessRows = await query(
+    'SELECT id, name, owner_id FROM public.businesses WHERE owner_id = $1 LIMIT 1',
+    [session.user.id]
+  );
+
+  let business = businessRows[0];
+
+  if (!business) {
+    // If business doesn't exist yet, create it
+    const businessName = session.user.name ? `${session.user.name}'s Lavadero` : 'Mi Lavadero';
+    const created = await query(
+      'INSERT INTO public.businesses (owner_id, name) VALUES ($1, $2) RETURNING id, name, owner_id',
+      [session.user.id, businessName]
+    );
+    business = created[0];
+
+    // Seed initial services for this business
+    await query('SELECT public.seed_default_services($1)', [business.id]);
+
+    // Add owner membership
+    await query(
+      'INSERT INTO public.business_members (business_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
+      [business.id, session.user.id, 'owner']
+    );
+  }
+
+  // Check role
+  const memberRows = await query(
+    'SELECT role FROM public.business_members WHERE business_id = $1 AND user_id = $2 LIMIT 1',
+    [business.id, session.user.id]
+  );
+  const role = (memberRows[0]?.role as 'owner' | 'operator') || 'owner';
+
+  return {
+    user: {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+    },
+    business,
+    role,
+  };
 }
+
 export function fail(error: unknown, status = 400) {
- const message = error instanceof Error ? error.message : 'No pudimos completar la operación.';
- const safe = ['Servicio de cuentas','Servicio interno','Origen no permitido','Iniciá sesión','No pudimos cargar','Pagos todavía','Configuración de precio','Ya tenés','Completá','Esperá','Tu suscripción','Datos inválidos','No pudimos verificar'].some(x => message.startsWith(x));
- return NextResponse.json({ error: safe ? message : 'No pudimos completar la operación. Intentá de nuevo.' }, { status });
+  const message = error instanceof Error ? error.message : 'No pudimos completar la operación.';
+  const safePrefixes = [
+    'Servicio de cuentas',
+    'Servicio interno',
+    'Servicio de base de datos',
+    'Origen no permitido',
+    'Iniciá sesión',
+    'No pudimos cargar',
+    'Pagos todavía',
+    'Configuración de precio',
+    'Ya tenés',
+    'Completá',
+    'Esperá',
+    'Tu suscripción',
+    'Datos inválidos',
+    'No pudimos verificar',
+    'Transición de estado',
+    'El vehículo no existe',
+  ];
+  const isSafe = safePrefixes.some((x) => message.startsWith(x));
+  return NextResponse.json(
+    { error: isSafe ? message : 'No pudimos completar la operación. Intentá de nuevo.' },
+    { status }
+  );
 }
+
 export async function boundedJSON(req: NextRequest) {
- const body = await req.text();
- if (body.length > 12000) throw new Error('Datos inválidos.');
- return JSON.parse(body);
+  const body = await req.text();
+  if (body.length > 25000) throw new Error('Datos inválidos.');
+  return JSON.parse(body);
 }

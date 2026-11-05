@@ -6,18 +6,20 @@
     "dev": "next dev -p 3100",
     "build": "next build",
     "start": "next start -p 3100",
-    "test": "node tests/billing.test.cjs",
+    "test": "node tests/billing.test.cjs && node tests/tenant-isolation.test.cjs",
+    "db:migrate": "node scripts/migrate.cjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.5.1",
-    "@supabase/supabase-js": "^2.45.4",
+    "@neondatabase/serverless": "^1.2.0",
+    "better-auth": "^1.7.18",
     "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
     "lucide-react": "^0.447.0",
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {

@@ -1,3 +1,77 @@
-import { Nav,Footer } from '@/components/brand';
-export const metadata={title:'Condiciones del servicio'};
-export default function Page(){return <><Nav/><main className="legal wrap"><div className="eyebrow">CONDICIONES DEL SERVICIO</div><h1>Una relación clara.</h1><div className="notice">Versión preliminar. La contratación y los cobros están deshabilitados hasta completar la identificación del prestador, el canal de soporte y la configuración del servicio.</div><h2>Servicio</h2><p>LavaYA! es una herramienta de organización operativa para lavaderos. La demo es ilustrativa y usa datos ficticios. No constituye un sistema de facturación tributaria ni reemplaza tus obligaciones contables.</p><h2>Prueba y renovación</h2><p>El plan propuesto cuesta US$20 mensuales más impuestos aplicables por local. La prueba gratuita dura siete días desde la confirmación del checkout con tarjeta, no desde el registro. Al finalizar se renueva automáticamente al precio informado, salvo cancelación previa. El checkout mostrará el importe y condiciones finales antes de confirmar.</p><h2>Cancelación y pagos</h2><p>Podrás cancelar desde Suscripción y consultar la fecha de fin de acceso. Cancelar antes del fin de la prueba evita la primera mensualidad. El proveedor de pagos procesa la tarjeta y las renovaciones. Cualquier cambio de precio se comunicará antes de aplicarlo.</p><h2>Tus datos y uso</h2><p>Sos responsable de cargar información que tengas derecho a utilizar y de mantener tus credenciales seguras. Los negocios deben tener datos separados. Los plazos de conservación, exportación, devolución y eliminación se completarán antes del lanzamiento comercial.</p><h2>Antes del lanzamiento</h2><p>Falta publicar razón o nombre del prestador, identificación fiscal aplicable, contacto verificable, política de devoluciones y procedimiento de atención. Estas condiciones preliminares no certifican cumplimiento legal.</p></main><Footer/></>;}
+import { Nav, Footer } from '@/components/brand';
+
+export const metadata = {
+  title: 'Términos y Condiciones del Servicio · LavaYA!',
+  description: 'Términos de servicio, períodos de prueba, renovación, cancelación y responsabilidades de LavaYA!.',
+};
+
+export default function Page() {
+  return (
+    <>
+      <Nav />
+      <main className="legal wrap">
+        <div className="eyebrow">CONDICIONES DEL SERVICIO</div>
+        <h1>Términos del Servicio</h1>
+        <div className="notice">
+          Documento regulatorio del servicio SaaS LavaYA!. Los cobros reales permanecen en modo de prueba (sandbox) hasta la verificación definitiva de la cuenta de comerciante y medios de pago.
+        </div>
+
+        <h2>1. Identificación del prestador y contacto</h2>
+        <p>
+          <strong>LavaYA!</strong> es una plataforma de software como servicio (SaaS) desarrollada para la gestión operativa y de caja de lavaderos de autos y motos, dirigida por <strong>Abel</strong> (Fundador y desarrollador titular).
+        </p>
+        <p>
+          Para consultas, asistencia operativa o ejercicio de derechos sobre tu cuenta, podés contactarnos a través del panel de control o por correo electrónico institucional.
+        </p>
+
+        <h2>2. Naturaleza del software y límites de responsabilidad</h2>
+        <p>
+          LavaYA! proporciona herramientas de recepción en pista, cambio de estados de vehículos, control de métodos de pago en Guaraníes (efectivo, transferencia bancaria y pendiente), registro de gastos menores de caja y enlace de seguimiento para clientes.
+        </p>
+        <p>
+          <strong>Aviso tributario importante:</strong> LavaYA! es exclusivamente una herramienta de gestión operativa interna y arqueo de caja. No constituye un sistema de facturación electrónica tributaria (e-Kuatia / DNIT) ni sustituye las obligaciones legales, fiscales o contables del lavadero.
+        </p>
+
+        <h2>3. Prueba gratuita de 7 días y activación con tarjeta</h2>
+        <p>
+          El acceso inicial a cualquiera de los planes de LavaYA! incluye un período de <strong>prueba gratuita de siete (7) días corridos</strong>. Para activar la prueba, el proveedor de pagos internacional solicita el registro de un método de pago válido (tarjeta de crédito o débito) mediante un checkout seguro y encriptado.
+        </p>
+        <p>
+          La prueba no se inicia con la mera creación de la cuenta de usuario, sino una vez confirmada la tarjeta en el checkout de la pasarela de pagos. Se concede un máximo de una (1) prueba gratuita por lavadero/negocio. Cambiar de plan durante la vigencia de la suscripción no otorga un período de prueba adicional.
+        </p>
+
+        <h2>4. Planes, renovación y facturación</h2>
+        <p>
+          Finalizados los 7 días de prueba, se aplicará el cargo correspondiente al plan seleccionado por el usuario:
+        </p>
+        <ul>
+          <li><strong>Plan Mensual:</strong> US$20 cada mes (facturación recurrente mensual).</li>
+          <li><strong>Plan Semestral:</strong> US$108 cada 6 meses (equivalente a US$18/mes; ahorro de US$12 por semestre frente al mensual).</li>
+          <li><strong>Plan Anual:</strong> US$192 cada 12 meses (equivalente a US$16/mes; ahorro de US$48 por año frente al mensual).</li>
+        </ul>
+        <p>
+          Los impuestos aplicables según la jurisdicción del comprador se desglosan en pantalla antes de confirmar el pago. Los cobros se renuevan automáticamente al vencer cada ciclo, a menos que el usuario cancele su suscripción previamente.
+        </p>
+
+        <h2>5. Cancelación de la suscripción y política de devoluciones</h2>
+        <p>
+          El usuario puede cancelar la renovación de su suscripción en cualquier momento de manera autónoma desde el panel de LavaYA! (sección Suscripción / Portal de cliente).
+        </p>
+        <p>
+          - <strong>Cancelación durante los 7 días de prueba:</strong> Si se cancela antes del vencimiento del día 7, la tarjeta no sufrirá ningún cargo. El acceso al servicio concluirá al cumplirse los 7 días.<br />
+          - <strong>Cancelación de suscripción activa:</strong> Si se cancela un plan ya facturado, el acceso al panel y sus datos permanecerá plenamente activo hasta el último día del período ya pagado. No se generan cobros futuros.<br />
+          - <strong>Devoluciones:</strong> Al tratarse de un servicio digital con prueba gratuita previa de 7 días sin costo, los períodos ya devengados no son reembolsables salvo fallos técnicos graves y prolongados atribuibles a la plataforma y reportados dentro de los 14 días posteriores al cobro.
+        </p>
+
+        <h2>6. Aislamiento, exportación y conservación de datos</h2>
+        <p>
+          Cada lavadero dispone de un entorno aislado con base de datos particionada por negocio (aislamiento estricto multi-tenant). Ningún otro usuario o lavadero puede visualizar tus vehículos, clientes, cobros o gastos.
+        </p>
+        <p>
+          El titular del lavadero puede solicitar en cualquier momento la exportación de sus datos históricos. Tras la cancelación definitiva de una cuenta, los datos se conservan de forma segura durante 30 días calendario por si el usuario decide reactivar su cuenta; transcurrido dicho plazo, se procede a su eliminación irreversible de los servidores principales de producción.
+        </p>
+      </main>
+      <Footer />
+    </>
+  );
+}

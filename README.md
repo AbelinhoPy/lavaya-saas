@@ -1,74 +1,156 @@
-# LavaYA!
+# LavaYA! — SaaS de Gestión Operativa para Lavaderos de Autos y Motos
 
-Primera versión local del SaaS para lavaderos de Abel. Nombre y precio confirmados: **LavaYA!**, **US$20/mes**, prueba gratuita de **7 días con tarjeta**. No hay cuentas de proveedor ni cobros reales conectados. El proyecto original del Escritorio no se modificó.
+Plataforma SaaS full-stack para dueños de lavaderos de autos y motos. Nombre confirmado: **LavaYA!**. Precio base confirmado: **US$20/mes** con opciones de ahorro semestral y anual, todos con **7 días de prueba gratis con tarjeta**.
 
-## Abrir
+- **Ubicación canónica del proyecto:** `C:\Users\abelk\Desktop\SaaS Lavadero`
+- **Base de datos:** Neon PostgreSQL (Serverless) con conexión segura y migraciones versionadas.
+- **Autenticación:** Better Auth integrado nativamente sobre Neon PostgreSQL (sesiones en servidor, cookies httpOnly / secure / sameSite, protección anti-abuso y recuperación de contraseña).
+- **Procesador de pagos:** Paddle (Merchant of Record) con suscripción multi-plan (mensual, semestral, anual), prueba de 7 días con tarjeta requerida, firmas HMAC SHA256, deduplicación y bloqueos consultivos (advisory locks).
+- **Moneda operativa:** Guaraníes (Gs.) para precios, servicios, adicionales, cobros y caja diaria; suscripción al software en USD.
+- **Hosting recomendado:** Vercel (subdominio inicial `.vercel.app`).
 
-Node 20 o superior. En esta carpeta:
+---
+
+## 🚀 Inicio Rápido Local
+
+Requisitos: Node.js 20 o superior.
 
 ```powershell
-npm ci
+cd "C:\Users\abelk\Desktop\SaaS Lavadero"
+npm install
 npm run dev
 ```
 
-Abrir http://localhost:3100. `npm run build` verifica la compilación para producción; `npm test` verifica firmas de pago, vencimientos, tarifa, entradas y transiciones. `npm run typecheck` comprueba TypeScript.
+Abrir [http://localhost:3100](http://localhost:3100) en el navegador.
 
-## Qué funciona sin servicios externos
+### Comandos de Verificación y Calidad
 
-- Página pública adaptable a celular y escritorio, marca, funciones, vista ilustrativa, precio, FAQ y condiciones preliminares.
-- `/demo`: tablero con vehículos ficticios. Permite registrar, avanzar estados y cobrar en efectivo o transferencia. No persiste al recargar; no envía datos a la base.
-- Pantallas `/registro`, `/ingresar`, `/recuperar`, `/restablecer`, con aviso explícito si el servicio de cuentas no está conectado.
-- `/robots.txt` y `/sitemap.xml`, generados con NEXT_PUBLIC_SITE_URL.
+- `npm run typecheck`: Comprobación estricta de tipos de TypeScript (`tsc --noEmit`).
+- `npm test`: Ejecuta las suites de pruebas unitarias:
+  1. `tests/billing.test.cjs`: Firmas HMAC de webhooks, protección contra alteración/replay, cálculo de vencimientos, validación estricta de los 3 planes de Paddle con prueba de 7 días, validación de placas y transiciones de estado secuenciales.
+  2. `tests/tenant-isolation.test.cjs`: Prueba de aislamiento multi-inquilino entre dos negocios independientes (comprobando que el negocio A no puede ver ni modificar trabajos o gastos del negocio B ni con accesos directos por ID).
+- `npm run build`: Compilación optimizada para producción con Next.js (24 páginas y rutas estáticas/dinámicas).
+- `npm run db:migrate`: Aplica las migraciones versionadas contra Neon PostgreSQL.
 
-## Conectar cuentas y datos
+---
 
-1. Crear un proyecto **nuevo** de Supabase. No aplicar este esquema sobre el proyecto viejo sin preparar una migración.
-2. Revisar y ejecutar `supabase/001_lavaya.sql`. Crea un negocio por propietario, trabajos, suscripciones, registros de checkout y eventos de pago.
-3. Copiar `.env.example` a `.env.local` y completar URL, clave pública y clave service-role. Nunca compartir ni subir la service-role. No se copiaron credenciales del Escritorio.
-4. Configurar Site URL y redirects exactos: `http://localhost:3100/auth/callback` y la URL definitiva de producción. Habilitar confirmación de correo, servicio SMTP, límites de autenticación y protección antiabuso para lanzamiento.
-5. Registro y recuperación funcionan mediante Supabase; cookies httpOnly, Secure en producción, SameSite=Lax. Una cuenta no activa un período gratis por sí sola.
-6. Antes de usar con clientes, probar el esquema en el entorno de prueba con dos propietarios y accesos directos a la API/base. Las políticas restringen los trabajos al negocio y a la suscripción vigente; no se comprobaron contra un servidor real en esta entrega.
+## 🛠️ Qué funciona sin servicios externos (Offline / Modo Demo)
 
-## Cobro mensual y prueba con tarjeta
+1. **Página de aterrizaje comercial (`/`):**
+   - Presentación moderna en verde profundo, blanco cálido y acentos lima.
+   - Fotografías reales de alta calidad en WebP con dimensiones optimizadas y carga diferida (`public/images/`), con licencias documentadas en `ASSETS-LICENSES.md`.
+   - Selector interactivo de planes: Mensual (US$20/mes), Semestral (US$108 cada 6 meses, 10% ahorro) y Anual (US$192 cada 12 meses, 20% ahorro).
+   - Vista ilustrativa del centro de operaciones y recibo de cobro.
+   - Preguntas frecuentes y enlaces legales.
+2. **Demo interactiva completa (`/demo`):**
+   - Pista operativa Kanban: En espera → Lavando → Listo → Entregado (con confetti).
+   - Modal de recepción rápida: Selección Auto 🚗 / Moto 🏍️, placa con formato paraguayo, servicio base y adicionales (encerado, tapizado, silicona).
+   - Modal de cobro con diferenciación transparente: **Efectivo**, **Transferencia** y **Pendiente**.
+   - Caja del día: Resumen de cobros efectivo vs transferencia, cobros pendientes separados, gastos menores de insumos y balance operativo de caja.
+   - Catálogo de servicios con edición interactiva de precios en Guaraníes.
+   - Demostración de enlace de seguimiento por token para clientes (`/estado/[token]`).
+   - Todos los cambios de la demo se ejecutan en memoria local y no alteran la base de datos de producción.
+3. **Consulta pública de seguimiento (`/estado/[token]` y `/estado/consulta`):**
+   - El cliente ingresa su código seguro (ej: `tk_a1b2c3d4e5f6`) y consulta el avance en pista (En espera → Lavando → Listo → Entregado).
+   - Información estrictamente pública: placa, servicio y estado. **Nunca expone caja, gastos, teléfonos ni importes privados.**
+4. **Pantallas de autenticación (`/ingresar`, `/registro`, `/recuperar`, `/restablecer`):**
+   - Formularios preparados con Better Auth y Neon. Si `DATABASE_URL` no está conectada, muestra aviso preventivo sin errores fatales.
+5. **Páginas legales (`/terminos` y `/privacidad`):**
+   - Información completa sobre identidad, contacto, facturación, política de devoluciones, cancelación y tratamiento de datos con aislamiento multi-inquilino.
 
-**Paddle sandbox primero.** No hay formulario propio de tarjeta. Paddle recoge la tarjeta en su checkout. El backend nunca debe recibir PAN/CVC.
+---
 
-1. Crear cuenta de vendedor y verificar que Paddle aprueba este negocio desde Paraguay, su identidad y el método de retiro real (banco o Payoneer, según habilitación). País admitido no garantiza aprobación ni retiro particular.
-2. Crear producto y precio recurrente: moneda USD, amount `2000`, ciclo `{interval:'month',frequency:1}`, prueba `{interval:'day',frequency:7,requires_payment_method:true}` sin `unit_price` de prueba ni overrides. Cantidad uno.
-3. Configurar dominio/default payment link en Paddle, token de cliente y API key de sandbox. El checkout usa `/panel` como destino de retorno. Configurar permisos API mínimos para precios, transacciones y portal.
-4. Crear destino webhook `/api/billing/webhook`, habilitar eventos `subscription.created`, `subscription.trialing`, `subscription.activated`, `subscription.updated`, `subscription.past_due`, `subscription.paused`, `subscription.resumed` y `subscription.canceled`. Copiar su secreto al entorno.
-5. Completar PADDLE_PRICE_ID y demás variables; BILLING_ENABLED permanece `false` hasta terminar la configuración. Habilitar solo sandbox al probar.
-6. La creación de checkout exige sesión y autorización de renovación; comprueba tarifa/prueba consultando a Paddle. El registro del transaction_id relaciona eventos con el negocio desde el servidor. Los eventos deben tener HMAC válido y timestamp reciente; SQL deduplica eventos y descarta actualizaciones antiguas. Solo períodos active/trialing no vencidos habilitan datos.
-7. Si los eventos llegan antes de guardar el checkout o fuera de orden, se devuelve error para permitir reintento. El primer evento debe incluir transaction_id válido; comprobar este flujo con eventos sandbox reales. No se concede acceso por parámetros URL ni por el retorno del navegador.
-8. El portal autenticado permite gestionar la suscripción/cancelar. Un negocio con suscripción anterior debe usar ese portal, no recibir otra prueba automáticamente. El guardado de checkout evita aperturas repetidas durante 10 minutos.
+## 🐘 Conectar Neon PostgreSQL
 
-## Dinero que recibe Abel
+1. Crear un proyecto en [Neon Console](https://console.neon.tech).
+2. Copiar la cadena de conexión con connection pooling (`pooled` / `neondb`).
+3. En tu archivo `.env.local` (o en las variables de entorno de Vercel), configurar:
+   ```env
+   DATABASE_URL="postgres://[usuario]:[password]@[endpoint-neon].pooler.neon.tech/neondb?sslmode=require"
+   BETTER_AUTH_SECRET="generar_clave_aleatoria_de_32_bytes"
+   NEXT_PUBLIC_SITE_URL="https://tu-proyecto.vercel.app"
+   ```
+4. Aplicar las migraciones versionadas:
+   ```powershell
+   $env:DATABASE_URL="postgres://..."
+   npm run db:migrate
+   ```
+   El script `scripts/migrate.cjs` ejecutará `sql/migrations/001_initial_neon.sql` y creará la tabla `_migrations` para registrar versiones aplicadas.
 
-El comprador paga al proveedor. Paddle descuenta sus comisiones, ajustes y obligaciones que le correspondan como merchant of record; el saldo se liquida al método de retiro aprobado según su calendario y umbral vigentes. Su precio público consultado el 5/11/2026 es 5% + US$0,50 por operación: sobre una base de US$20 serían US$1,50 y quedarían US$18,50 antes de otros cargos, impuestos o ajustes. Su ayuda indica liquidación mensual con umbral mínimo US$100 y envío hasta el día 15. Confirmar condiciones concretas, conversión y cargos del banco. No se abrió una cuenta bancaria, no se configuraron retiros y no se verificó una liquidación real.
+---
 
-Documentación oficial:
-- https://developer.paddle.com/build/trials/create-trial/
-- https://developer.paddle.com/webhooks/about/signature-verification/
-- https://developer.paddle.com/build/customers/integrate-customer-portal/
-- https://developer.paddle.com/build/go-live-checklist/
-- https://www.paddle.com/help/manage/get-paid
-- https://www.paddle.com/pricing
-- https://www.paddle.com/help/manage/get-paid/when-and-how-do-i-get-paid
-- https://www.paddle.com/help/start/account-verification/which-countries-are-supported-by-paddle
+## 💳 Cobros y Suscripciones (Paddle Sandbox)
 
-## Publicar en Vercel
+**Importante:** `BILLING_ENABLED=false` por defecto. El backend nunca recibe ni procesa números de tarjeta (PAN/CVC); la tarjeta se ingresa exclusivamente dentro del checkout seguro de Paddle.
 
-Importar esta carpeta como proyecto Next.js y configurar variables por entorno. Cambiar NEXT_PUBLIC_SITE_URL a la URL https definitiva, añadir redirect exacto de Supabase y configurar el dominio en Paddle. Vercel genera dirección `.vercel.app`; no hace falta comprar un dominio para la primera publicación. **El plan Hobby no admite uso comercial**: elegir un plan compatible antes de vender, no activar una suscripción de hosting sin autorización.
+### Pasos para configurar Paddle:
+1. Registrarse en [Paddle](https://paddle.com) en modo **Sandbox**.
+2. Crear un producto: **LavaYA! - Sistema para Lavaderos**.
+3. Crear los 3 precios recurrentes en USD, con **7 días de prueba gratis que requieren tarjeta** (`requires_payment_method: true`):
+   - **Mensual:** US$20.00 (`amount: 2000`), ciclo: 1 mes.
+   - **Semestral:** US$108.00 (`amount: 10800`), ciclo: 6 meses.
+   - **Anual:** US$192.00 (`amount: 19200`), ciclo: 12 meses (o 1 año).
+4. Copiar los IDs de precio en el entorno:
+   ```env
+   PADDLE_PRICE_ID_MONTHLY="pri_..."
+   PADDLE_PRICE_ID_SEMIANNUAL="pri_..."
+   PADDLE_PRICE_ID_ANNUAL="pri_..."
+   PADDLE_API_KEY="paddlev2_..."
+   NEXT_PUBLIC_PADDLE_CLIENT_TOKEN="live_... o test_..."
+   ```
+5. En Paddle Sandbox, crear un webhook apuntando a `https://tu-proyecto.vercel.app/api/billing/webhook`.
+   - Habilitar eventos de suscripción (`subscription.created`, `subscription.trialing`, `subscription.activated`, `subscription.updated`, `subscription.past_due`, `subscription.paused`, `subscription.resumed`, `subscription.canceled`).
+   - Copiar la clave secreta generada en `PADDLE_WEBHOOK_SECRET`.
+6. Al completar las pruebas sandbox de ciclo de vida (inicio de prueba, cancelación antes de cobrar, renovación y fallo de pago), solicitar la activación de vendedor y cambiar `BILLING_ENABLED=true`.
 
-https://vercel.com/docs/plans/hobby
+### Cómo recibe Abel el dinero de las suscripciones
+- **Rol de Paddle:** Paddle opera como *Merchant of Record* (comerciante registrado), encargándose del cobro con tarjeta, prevención de fraude e impuestos internacionales.
+- **Comisiones oficiales:** 5% + US$0,50 por transacción exitosa.
+  - Sobre un pago de US$20/mes, la comisión de Paddle es de US$1,50; el saldo neto antes de retenciones o costos de transferencia es de aprox. US$18,50.
+  - Sobre el plan semestral (US$108), la comisión es de US$5,90 (quedan US$102,10).
+  - Sobre el plan anual (US$192), la comisión es de US$10,10 (quedan US$181,90).
+- **Cobro en Paraguay:** Paddle liquida los fondos de forma mensual (al alcanzar el umbral mínimo de US$100). Para vendedores en Paraguay, el retiro se realiza habitualmente vía **Payoneer** (cuenta virtual bancaria en USD) o transferencia bancaria internacional directa (SWIFT) a una cuenta bancaria habilitada en Paraguay. Se deben considerar los costos de recepción bancaria local o conversión de divisas.
 
-Search Console: propiedad de prefijo de URL, verificar con etiqueta y enviar sitemap. No se garantiza indexación ni posición. Las rutas de cuentas/panel no deben indexarse y los datos reales están protegidos por sesión/RLS, no por robots.txt.
+---
 
-## Pendientes antes de cobrar a clientes
+## 🌐 Despliegue en Vercel
 
-- Completar identidad del prestador, contacto real, condiciones de devolución, exportación, conservación y eliminación de datos. Las páginas legales se identifican como preliminares.
-- Configurar y probar Supabase, SMTP y Paddle sandbox; validar aislamiento entre dos negocios, transiciones, período vencido, webhooks repetidos/alterados, cancelación durante prueba y primer cobro. Luego prueba controlada de liquidación al método de retiro aprobado.
-- Verificar copias de seguridad y restauración, monitoreo de fallos de webhook, límites de abuso y dependencia/versión soportada antes de producción. No activar checkout real solamente porque la página se ve terminada.
-- Elegir si migrar las funciones del lavadero original: gastos, servicios configurables y vista pública por token. Esta versión conserva el flujo central de vehículos/cobros; no anuncia comisiones, personal ilimitado, facturación fiscal ni sincronización instantánea que aún no tiene.
+1. Subir el repositorio a GitHub:
+   ```powershell
+   git remote add origin https://github.com/tu-usuario/saas-lavadero.git
+   git branch -M main
+   git push -u origin main
+   ```
+2. En [Vercel](https://vercel.com), importar el repositorio como proyecto Next.js.
+3. Cargar las variables de entorno de producción desde `.env.example`:
+   - `DATABASE_URL`
+   - `BETTER_AUTH_SECRET`
+   - `NEXT_PUBLIC_SITE_URL`
+   - `PADDLE_ENVIRONMENT` (sandbox o production)
+   - `PADDLE_API_KEY`
+   - `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN`
+   - `PADDLE_PRICE_ID_MONTHLY`, `PADDLE_PRICE_ID_SEMIANNUAL`, `PADDLE_PRICE_ID_ANNUAL`
+   - `PADDLE_WEBHOOK_SECRET`
+   - `BILLING_ENABLED`
+4. **Nota sobre planes de Vercel:** El plan *Vercel Hobby* es para proyectos personales no comerciales. Para comercializar formalmente suscripciones de pago a terceros, se debe contratar un plan Vercel Pro o compatible.
 
-No se publicaron testimonios inventados, logos de clientes ni cifras reales de usuarios. Los importes y placas de la página y demo son ilustrativos.
+---
+
+## 🔍 Google Search Console & SEO
+
+1. `robots.txt` y `sitemap.xml` se generan dinámicamente con las URLs canónicas del sitio en `/api/seo/robots` y `/api/seo/sitemap`.
+2. Las rutas privadas `/panel`, `/api/*` y flujos de autenticación están bloqueadas para los motores de búsqueda mediante encabezados `X-Robots-Tag: noindex` y reglas en `robots.txt`.
+3. Para dar de alta en Google Search Console:
+   - Crear propiedad de tipo **Prefijo de la URL** con la dirección https definitiva (ej: `https://lavaya.vercel.app`).
+   - Verificar mediante etiqueta meta HTML o registro DNS.
+   - Enviar sitemap: `https://tu-dominio.com/sitemap.xml`.
+
+---
+
+## 📋 Lista de tareas pendientes que Abel debe completar
+
+1. [ ] Crear base de datos en [Neon.tech](https://neon.tech) y ejecutar `npm run db:migrate` con el `DATABASE_URL`.
+2. [ ] Crear cuenta en [Paddle](https://paddle.com) (Sandbox) y configurar los 3 precios (Mensual US$20, Semestral US$108, Anual US$192) con 7 días de prueba con tarjeta.
+3. [ ] Configurar el webhook de Paddle hacia la URL desplegada en Vercel.
+4. [ ] Verificar en Paddle la habilitación del método de retiro para Paraguay (Payoneer o transferencia bancaria).
+5. [ ] Configurar las variables en el panel de Vercel y realizar el despliegue a producción.

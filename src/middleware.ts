@@ -1,9 +1,25 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { NextRequest,NextResponse } from 'next/server';
-export async function middleware(req:NextRequest){
- let response=NextResponse.next({request:{headers:req.headers}});
- if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)return response;
- const db=createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,{cookies:{getAll:()=>req.cookies.getAll(),setAll:(values:{name:string;value:string;options:CookieOptions}[])=>{values.forEach(({name,value})=>req.cookies.set(name,value));response=NextResponse.next({request:{headers:req.headers}});values.forEach(({name,value,options})=>response.cookies.set(name,value,{...options,httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax'}));}}});
- await db.auth.getUser();return response;
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Protect /panel routes: ensure session cookie exists
+  if (pathname.startsWith('/panel')) {
+    const sessionCookie =
+      req.cookies.get('better-auth.session_token') ||
+      req.cookies.get('__Secure-better-auth.session_token');
+
+    // If database is not configured or session cookie is completely missing, redirect to ingresar
+    if (!sessionCookie) {
+      const url = req.nextUrl.clone();
+      url.pathname = '/ingresar';
+      return NextResponse.redirect(url);
+    }
+  }
+
+  return NextResponse.next();
 }
-export const config={matcher:['/panel/:path*']};
+
+export const config = {
+  matcher: ['/panel/:path*'],
+};

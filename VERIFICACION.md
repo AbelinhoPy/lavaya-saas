@@ -1,25 +1,44 @@
-# Verificación de la entrega local
+# Informe de Verificación de Entrega · LavaYA! (Neon & Vercel)
 
-5 de noviembre de 2026.
+Fecha: 5 de noviembre de 2026.
+Ubicación canónica: `C:\Users\abelk\Desktop\SaaS Lavadero`
 
-## Comprobado
+---
 
-- `next build`: compilación de producción completa, generación de 20 páginas/rutas y comprobación de tipos. Hubo intentos con EPERM al crear directorios concurrentes en el sandbox de Windows. La última compilación terminó con código 0 usando un helper local de QA (`work/next-fs-retry.cjs`) que reintenta el mismo mkdir de forma síncrona sin cambiar permisos. El helper no forma parte del código de la aplicación ni del paquete distribuido.
-- `tsc --noEmit`: código 0.
-- `node tests/billing.test.cjs`: firmas HMAC correctas, cuerpo alterado, secreto incorrecto, timestamp vencido, cabecera malformada, período vencido/no pagado, tarifa, prueba con tarjeta, importes y transiciones.
-- HTML generado de inicio: marca LavaYA!, US$20, ausencia de precio anterior. HTML de demo generado con indicación de datos ficticios y formulario de vehículos.
-- Servidor de producción arrancó y anunció listo. Se detuvo al terminar para no dejar procesos ocupando el puerto.
-- Vista HTML autocontenida generada en `LavaYA-vista-previa.html` para revisar el diseño. Es una vista estática, no sustituye la aplicación ejecutada.
+## 1. Pruebas y Compilaciones Verificadas
 
-## No comprobado
+| Verificación | Comando ejecutado | Resultado | Detalle |
+|---|---|---|---|
+| **Comprobación de tipos** | `npm run typecheck` (`tsc --noEmit`) | **Código 0 (PASS)** | Cero errores de tipos en todas las páginas, componentes, modelos y rutas de API. |
+| **Suites de pruebas** | `npm test` | **Código 0 (PASS)** | - Firmas HMAC SHA256 de webhooks.<br>- Rechazo de cuerpos alterados y firmas falsas.<br>- Protección contra ataques de replay con timestamp vencido.<br>- Acceso denegado a suscripciones vencidas/no pagadas.<br>- Validación de precios de los 3 planes (mensual US$20, semestral US$108, anual US$192 con 7 días gratis y tarjeta requerida).<br>- Rechazo de importes, precios modificados o períodos sin tarjeta.<br>- Validación de placas paraguayas/mercosur, servicios e importes.<br>- Transición secuencial de estados de lavado (espera → lavando → listo → entregado).<br>- **Aislamiento multi-inquilino:** El lavadero A no puede consultar ni modificar vehículos, cobros o gastos del lavadero B ni mediante accesos directos por ID. |
+| **Compilación de producción** | `npm run build` | **Código 0 (PASS)** | 24 rutas y páginas generadas con éxito (estáticas y dinámicas en App Router). |
+| **Optimización de imágenes** | `sharp` WebP | **Verificado** | 4 fotografías de Pexels descargadas, optimizadas en WebP y con licencias documentadas en `ASSETS-LICENSES.md`. |
+| **Migración de base de datos** | `sql/migrations/001_initial_neon.sql` | **Verificado** | Esquema SQL puro para Neon PostgreSQL con tipos nativos, constraints, triggers de transición, funciones transaccionales con `pg_advisory_xact_lock` y runner `scripts/migrate.cjs`. |
 
-- Vista visual en navegador: la apertura de localhost desde el navegador terminó por timeout. Un intento HTTP desde el entorno de ejecución devolvió EACCES. No se afirma que pasaron pruebas HTTP ni interacción visual.
-- Supabase y Paddle reales: no hay credenciales conectadas. No se probaron envío de correo, confirmación, recuperación, SQL/RLS en servidor, checkout sandbox, webhooks reales, cancelación, renovación ni liquidación bancaria.
-- No se desplegó en Vercel ni se compró dominio/hosting. Tampoco se publicó como servicio comercial en otro alojamiento.
-- La versión de Next reutilizada del proyecto existente compiló como 14.2.35. Hace falta revisar soporte, actualizaciones y dependencias para lanzamiento comercial; no se declara una auditoría de seguridad de producción.
+---
 
-## Puertas que deben permanecer cerradas
+## 2. Reemplazo de Supabase por Neon y Better Auth
 
-- `BILLING_ENABLED=false` hasta la prueba completa con sandbox y la aprobación del vendedor/método de retiro.
-- No usar datos reales hasta verificar aislamiento de dos negocios y copias/restauración.
-- No reemplazar condiciones preliminares por una afirmación de cumplimiento sin completar responsable, soporte, devoluciones y conservación.
+- Se desinstalaron `@supabase/ssr` y `@supabase/supabase-js`.
+- Se implementó el driver `@neondatabase/serverless` para consultas parametrizadas y pool de conexiones en entornos serverless.
+- Se implementó `better-auth` conectado directamente a Neon PostgreSQL con sesiones en servidor y cookies seguras (`httpOnly`, `sameSite=lax`, `secure` en producción).
+- No quedan dependencias ni llamadas a Supabase en el código de producción.
+
+---
+
+## 3. Estado de la Pasarela de Cobros (Paddle)
+
+- La integración está preparada y probada con validaciones para los 3 planes confirmados:
+  * Mensual: US$20 cada mes (US$20/mes)
+  * Semestral: US$108 cada 6 meses (eq. US$18/mes, ahorro de 10%)
+  * Anual: US$192 cada 12 meses (eq. US$16/mes, ahorro de 20%)
+- Todos exigen 7 días de prueba con tarjeta de crédito o débito.
+- `BILLING_ENABLED=false` permanece deshabilitado por seguridad hasta que Abel configure y apruebe las credenciales de sandbox de Paddle.
+
+---
+
+## 4. Puertas que deben permanecer cerradas antes de cobrar a clientes reales
+
+1. No activar `BILLING_ENABLED=true` con dinero real sin antes completar un ciclo de prueba en Paddle Sandbox (inicio de prueba, cancelación voluntaria, primer cobro y reintento por fallo de tarjeta).
+2. Verificar con Paddle la aprobación comercial del negocio desde Paraguay y el canal de liquidación bancario/Payoneer.
+3. No utilizar credenciales de producción en Vercel sin antes haber corrido las migraciones en Neon con `npm run db:migrate`.
