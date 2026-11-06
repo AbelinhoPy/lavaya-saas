@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { ArrowUpRight, Check, Car, Wallet, Smartphone, ShieldCheck, Play, CircleCheck, Sparkles } from 'lucide-react';
 import { Nav, Footer } from '@/components/brand';
 import PricingTable from '@/components/pricing-table';
+import ContactForm from '@/components/contact-form';
 
 export const metadata = {
   title: 'LavaYA! · El orden que tu lavadero de autos y motos necesita',
@@ -296,6 +297,11 @@ export default function Home() {
           </div>
 
           <PricingTable />
+        </section>
+
+        {/* CONTACT & SUGGESTIONS SECTION */}
+        <section className="section wrap" id="contacto" style={{ paddingTop: 20, paddingBottom: 60 }}>
+          <ContactForm />
         </section>
 
         {/* FAQ SECTION */}

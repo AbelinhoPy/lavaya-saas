@@ -135,3 +135,47 @@ export async function sendPasswordResetEmail({ email, name, url }: { email: stri
     }),
   });
 }
+
+/**
+ * Correo 3: Consultas, sugerencias o mensajes recibidos desde la web
+ */
+export async function sendContactInquiryEmail({
+  nombre,
+  contacto,
+  tipo,
+  mensaje,
+}: {
+  nombre: string;
+  contacto: string;
+  tipo: string;
+  mensaje: string;
+}) {
+  const content = `
+    <p>Has recibido un nuevo mensaje enviado a través de la web de <strong>LavaYA!</strong>:</p>
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 20px 0;">
+      <p style="margin: 0 0 10px; font-size: 14px;"><strong>Remitente:</strong> ${nombre || 'No indicado'}</p>
+      <p style="margin: 0 0 10px; font-size: 14px;"><strong>Contacto (Email / Teléfono):</strong> <a href="${contacto.includes('@') ? 'mailto:' + contacto : 'tel:' + contacto}" style="color: #059669; font-weight: 600;">${contacto || 'No indicado'}</a></p>
+      <p style="margin: 0 0 10px; font-size: 14px;"><strong>Tipo de mensaje:</strong> <span style="background: #d1fae5; color: #065f46; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;">${tipo.toUpperCase()}</span></p>
+      <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 14px 0;" />
+      <p style="margin: 0 0 6px; font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Contenido del mensaje:</p>
+      <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #0f172a; white-space: pre-wrap; font-style: italic;">"${mensaje}"</p>
+    </div>
+    <p style="font-size: 13px; color: #64748b;">Podés responderle directamente contactándolo por el correo o teléfono que dejó registrado arriba.</p>
+  `;
+
+  const subjectType = tipo === 'sugerencia' ? 'Sugerencia' : tipo === 'demo' ? 'Solicitud Demo' : 'Consulta';
+  const senderIdentifier = nombre || contacto || 'Nuevo visitante';
+
+  const recipient = process.env.CONTACT_RECIPIENT_EMAIL || 'panky.mne@gmail.com';
+
+  return sendEmail({
+    to: recipient,
+    subject: `LavaYA! [${subjectType}] de ${senderIdentifier}`,
+    html: baseEmailTemplate({
+      title: `LavaYA! · ${subjectType}`,
+      content,
+      buttonText: 'Ir a LavaYA! Panel',
+      buttonUrl: 'https://lavaya-orcin.vercel.app/panel',
+    }),
+  });
+}

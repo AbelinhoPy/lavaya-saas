@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Instagram } from 'lucide-react';
 
 export function Brand() {
   return (
@@ -15,6 +16,7 @@ export function Nav() {
       <nav aria-label="Principal">
         <a href="/#funciones">Cómo funciona</a>
         <a href="/#precio">Planes</a>
+        <a href="/#contacto">Contacto</a>
         <Link href="/demo">Demo</Link>
         <Link href="/ingresar">Ingresar</Link>
         <Link className="button small" href="/registro">
@@ -34,10 +36,41 @@ export function Footer() {
         <small style={{ color: 'var(--muted)', display: 'block', marginTop: 4 }}>
           Operación en Guaraníes (Gs.) para lavaderos de Paraguay · SaaS por Abel
         </small>
+        <div style={{ marginTop: 12 }}>
+          <a
+            href="https://www.instagram.com/lavaya_app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              color: '#be185d',
+              fontWeight: 700,
+              fontSize: 13,
+              textDecoration: 'none',
+              background: '#fdf2f8',
+              padding: '6px 12px',
+              borderRadius: 20,
+              border: '1px solid #fbcfe8',
+            }}
+          >
+            <Instagram size={15} /> @lavaya_app
+          </a>
+        </div>
       </div>
       <div>
         <Link href="/demo">Demo interactiva</Link>
         <Link href="/estado/consulta">Seguimiento de cliente</Link>
+        <a href="/#contacto">Contacto y Sugerencias</a>
+        <a
+          href="https://www.instagram.com/lavaya_app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
+        >
+          <Instagram size={14} /> Instagram
+        </a>
         <Link href="/terminos">Términos del servicio</Link>
         <Link href="/privacidad">Privacidad</Link>
       </div>
