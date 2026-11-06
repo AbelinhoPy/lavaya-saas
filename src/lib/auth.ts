@@ -11,6 +11,12 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3100';
 export const auth = betterAuth({
   ...(isDbConfigured() ? { database: getPool() } : {}),
   baseURL: siteUrl,
+  trustedOrigins: [
+    'https://lavaya-orcin.vercel.app',
+    'https://lavaya-toman13.vercel.app',
+    'http://localhost:3100',
+    'http://localhost:3000',
+  ],
   secret: authSecret,
   user: {
     fields: {

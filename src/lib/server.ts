@@ -24,8 +24,22 @@ export function authConfigured(): boolean {
 
 export function originCheck(req: NextRequest) {
   const origin = req.headers.get('origin');
-  const expected = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3100';
-  if (!origin || origin !== new URL(expected).origin) {
+  if (!origin) return;
+
+  const host = req.headers.get('host');
+  const allowed = [
+    host ? `https://${host}` : null,
+    host ? `http://${host}` : null,
+    process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).origin : null,
+    'https://lavaya-orcin.vercel.app',
+    'https://lavaya-toman13.vercel.app',
+    'http://localhost:3100',
+    'http://localhost:3000',
+  ].filter(Boolean);
+
+  const isVercelSubdomain = /^https:\/\/lavaya[a-z0-9-]*\.vercel\.app$/.test(origin);
+
+  if (!allowed.includes(origin) && !isVercelSubdomain) {
     throw new Error('Origen no permitido.');
   }
 }
