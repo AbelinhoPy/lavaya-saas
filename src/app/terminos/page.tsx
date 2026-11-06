@@ -13,15 +13,26 @@ export default function Page() {
         <div className="eyebrow">CONDICIONES DEL SERVICIO</div>
         <h1>Términos del Servicio</h1>
         <div className="notice">
-          Documento regulatorio del servicio SaaS LavaYA!. Los cobros reales permanecen en modo de prueba (sandbox) hasta la verificación definitiva de la cuenta de comerciante y medios de pago.
+          Documento regulatorio del servicio SaaS LavaYA!. Cobros, suscripciones y facturación procesados por Paddle Payments Ltd. como Comerciante de Registro (Merchant of Record).
         </div>
 
         <h2>1. Identificación del prestador y contacto</h2>
         <p>
-          <strong>LavaYA!</strong> es una plataforma de software como servicio (SaaS) desarrollada para la gestión operativa y de caja de lavaderos de autos y motos, dirigida por <strong>Abel</strong> (Fundador y desarrollador titular).
+          <strong>LavaYA!</strong> es una plataforma de software como servicio (SaaS) desarrollada para la gestión operativa y de caja de lavaderos de autos y motos, fundada y operada de forma independiente por <strong>Abel</strong> (Titular y desarrollador titular), con base operativa en Asunción, República del Paraguay.
         </p>
         <p>
-          Para consultas, asistencia operativa o ejercicio de derechos sobre tu cuenta, podés contactarnos a través del panel de control o por correo electrónico institucional.
+          <strong>Canal oficial de atención al cliente y soporte:</strong><br />
+          • Correo electrónico de soporte: <a href="mailto:soporte.lavaya@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>soporte.lavaya@gmail.com</a><br />
+          • Asistencia directa para usuarios activos a través del panel de control de la plataforma.<br />
+          • Horario de atención: Lunes a Sábado de 07:00 a 19:00 (Hora de Paraguay, UTC-3).
+        </p>
+
+        <h2>2. Comerciante de Registro (Merchant of Record - Paddle)</h2>
+        <p>
+          Los cobros, la facturación internacional y la gestión de impuestos sobre las ventas para todas las suscripciones de LavaYA! son procesados por <strong>Paddle.com Market Ltd.</strong> (en el Reino Unido) o <strong>Paddle Payments Ltd.</strong> (en la Unión Europea), actuando como <strong>Comerciante de Registro (Merchant of Record)</strong> autorizado.
+        </p>
+        <p>
+          Al iniciar el período de prueba o contratar una suscripción, la transacción se realiza directamente con Paddle bajo sus estándares certificados PCI-DSS. Paddle es el comerciante que figura en el extracto de tu tarjeta bancaria y quien emite la factura legal de compra internacional.
         </p>
 
         <h2>2. Naturaleza del software y límites de responsabilidad</h2>
