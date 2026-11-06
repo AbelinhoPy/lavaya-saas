@@ -22,7 +22,7 @@ export default function Page() {
         </p>
         <p>
           <strong>Canal oficial de atención al cliente y soporte:</strong><br />
-          • Correo electrónico de soporte: <a href="mailto:soporte.lavaya@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>soporte.lavaya@gmail.com</a><br />
+          • Correo electrónico de soporte: <a href="mailto:abelnunez997@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>abelnunez997@gmail.com</a><br />
           • Asistencia directa para usuarios activos a través del panel de control de la plataforma.<br />
           • Horario de atención: Lunes a Sábado de 07:00 a 19:00 (Hora de Paraguay, UTC-3).
         </p>
