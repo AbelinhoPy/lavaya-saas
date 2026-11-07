@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Car, Bike, Clock, CheckCircle2, Sparkles, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Brand } from '@/components/brand';
+import { SponsoredAd } from '@/components/sponsored-ad';
 
 interface PublicStatusData {
   placa: string;
@@ -292,6 +293,9 @@ export default function EstadoPorTokenPage() {
                 </p>
               </div>
             )}
+
+            {/* Espacio Publicitario / Beneficios para el Conductor */}
+            <SponsoredAd lavaderoNombre={data.lavadero} isDemo={isDemo} />
 
             <div style={{ borderTop: '1px solid #edf1ea', marginTop: 28, paddingTop: 16, textAlign: 'center' }}>
               <small style={{ color: 'var(--muted)', fontSize: 11, display: 'block', lineHeight: 1.5 }}>
