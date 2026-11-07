@@ -3,10 +3,105 @@ import { query, isDbConfigured } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
+const DEMO_STATUS_MAP: Record<string, {
+  placa: string;
+  tipo: 'auto' | 'moto';
+  marca: string;
+  servicio: string;
+  estado: 'espera' | 'lavando' | 'listo' | 'entregado';
+  lavadero: string;
+  tiempos: {
+    recibido: string;
+    inicioLavado?: string;
+    listo?: string;
+    entregado?: string;
+  };
+}> = {
+  tk_demo_corolla: {
+    placa: 'BCF 482',
+    tipo: 'auto',
+    marca: 'Toyota Corolla',
+    servicio: 'Lavado Completo Auto + Encerado Carnauba Líquida',
+    estado: 'lavando',
+    lavadero: 'Lavadero LavaYA! (Demostración)',
+    tiempos: {
+      recibido: 'Hace 30 minutos',
+      inicioLavado: 'Hace 15 minutos',
+    },
+  },
+  tk_demo_kia: {
+    placa: 'AAKD 793',
+    tipo: 'auto',
+    marca: 'Kia Sportage',
+    servicio: 'Lavado Básico Exterior',
+    estado: 'espera',
+    lavadero: 'Lavadero LavaYA! (Demostración)',
+    tiempos: {
+      recibido: 'Hace 10 minutos',
+    },
+  },
+  tk_demo_honda: {
+    placa: 'BCD 165',
+    tipo: 'moto',
+    marca: 'Honda CB 190',
+    servicio: 'Lavado Completo Moto + Silicona y Perfume',
+    estado: 'listo',
+    lavadero: 'Lavadero LavaYA! (Demostración)',
+    tiempos: {
+      recibido: 'Hace 45 minutos',
+      inicioLavado: 'Hace 30 minutos',
+      listo: 'Hace 5 minutos',
+    },
+  },
+  tk_demo_hyundai: {
+    placa: 'AAL 520',
+    tipo: 'auto',
+    marca: 'Hyundai HB20',
+    servicio: 'Lavado Completo Auto',
+    estado: 'entregado',
+    lavadero: 'Lavadero LavaYA! (Demostración)',
+    tiempos: {
+      recibido: 'Hace 3 horas',
+      inicioLavado: 'Hace 2.5 horas',
+      listo: 'Hace 2 horas',
+      entregado: 'Hace 2 horas',
+    },
+  },
+};
+
 export async function GET(req: NextRequest, { params }: { params: { token: string } }) {
   try {
     const token = params?.token;
-    if (!token || typeof token !== 'string' || !/^tk_[a-f0-9]{16}$/.test(token)) {
+    if (!token || typeof token !== 'string') {
+      return NextResponse.json(
+        { error: 'Código de consulta no válido o inexistente.' },
+        { status: 404 }
+      );
+    }
+
+    // 1. Handle fictional demo vehicles
+    if (token.startsWith('tk_demo_')) {
+      const demoData = DEMO_STATUS_MAP[token] || {
+        placa: 'DEMO 123',
+        tipo: 'auto',
+        marca: 'Vehículo de Muestra',
+        servicio: 'Lavado Completo Auto',
+        estado: 'espera',
+        lavadero: 'Lavadero LavaYA! (Demostración)',
+        tiempos: {
+          recibido: 'Recién ingresado a pista',
+        },
+      };
+
+      return NextResponse.json({
+        status: 'success',
+        isDemo: true,
+        data: demoData,
+      });
+    }
+
+    // 2. Validate format for real tokens
+    if (!/^tk_[a-f0-9]{16}$/.test(token)) {
       return NextResponse.json(
         { error: 'Código de consulta no válido o inexistente.' },
         { status: 404 }
@@ -20,7 +115,7 @@ export async function GET(req: NextRequest, { params }: { params: { token: strin
       );
     }
 
-    // Select strictly minimal public information
+    // 3. Query real token from database (strictly minimal public data, no financial or personal contact info)
     const rows = await query(
       `SELECT 
          j.plate,
@@ -51,6 +146,7 @@ export async function GET(req: NextRequest, { params }: { params: { token: strin
 
     return NextResponse.json({
       status: 'success',
+      isDemo: false,
       data: {
         placa: job.plate,
         tipo: job.tipo,

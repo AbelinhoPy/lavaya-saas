@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { account, originCheck, fail, boundedJSON } from '@/lib/server';
 import { validJob, states, canAdvance, generateJobToken, JobState, PaymentMethod } from '@/lib/jobs';
 import { hasAccess } from '@/lib/billing-core';
-import { query } from '@/lib/db';
+import { query, transaction } from '@/lib/db';
 
 async function access() {
   const a = await account();
@@ -106,6 +106,68 @@ export async function PATCH(req: NextRequest) {
     const a = await access();
     const b = await boundedJSON(req);
 
+    // 1. Cobro posterior de vehículo entregado con pago pendiente
+    if (b.action === 'cobrar_pendiente') {
+      if (
+        typeof b.id !== 'string' ||
+        !['efectivo', 'transferencia'].includes(b.payment_method)
+      ) {
+        throw new Error('Datos de cobro inválidos. Debe indicar medio efectivo o transferencia.');
+      }
+
+      // Check existing job: tenant isolation via a.business.id
+      const jobRows = await query(
+        `SELECT id, state, amount, plate, payment_method 
+         FROM public.wash_jobs 
+         WHERE id = $1 AND business_id = $2 
+         LIMIT 1`,
+        [b.id, a.business.id]
+      );
+
+      const existingJob = jobRows[0];
+      if (!existingJob) {
+        throw new Error('El vehículo no existe o pertenece a otro lavadero.');
+      }
+
+      if (existingJob.state !== 'entregado') {
+        throw new Error('Solo se puede registrar cobro sobre vehículos que ya fueron entregados.');
+      }
+
+      if (existingJob.payment_method !== 'pendiente') {
+        throw new Error('Este vehículo ya tiene su cobro registrado previamente. No se puede cobrar dos veces.');
+      }
+
+      // Atomic update in a transaction preventing duplicate collection / race conditions
+      const job = await transaction(async (client) => {
+        const updateRes = await client.query(
+          `UPDATE public.wash_jobs 
+           SET payment_method = $1
+           WHERE id = $2 AND business_id = $3 AND payment_method = 'pendiente'
+           RETURNING id, plate, tipo, marca, service, extras, amount, state, payment_method, token_publico, notas, cliente_nombre, cliente_telefono, inicio_lavado, listo_en, entregado_en, created_at`,
+          [b.payment_method, b.id, a.business.id]
+        );
+
+        if (updateRes.rows.length === 0) {
+          throw new Error('El cobro ya fue procesado o no está en estado pendiente.');
+        }
+
+        const updatedJob = updateRes.rows[0];
+
+        // Record in public.payments table for caja accounting
+        await client.query(
+          `INSERT INTO public.payments (business_id, job_id, monto, medio)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT DO NOTHING`,
+          [a.business.id, updatedJob.id, updatedJob.amount, b.payment_method]
+        );
+
+        return updatedJob;
+      });
+
+      return NextResponse.json({ job, message: 'Cobro registrado correctamente.' });
+    }
+
+    // 2. Transición normal de etapas en pista
     if (
       typeof b.id !== 'string' ||
       !states.includes(b.state) ||
@@ -135,30 +197,34 @@ export async function PATCH(req: NextRequest) {
 
     const paymentMethod = nextState === 'entregado' ? (b.payment_method as PaymentMethod) : null;
 
-    // Update job state in Neon
-    const updated = await query(
-      `UPDATE public.wash_jobs 
-       SET state = $1, payment_method = $2
-       WHERE id = $3 AND business_id = $4 AND state = $5
-       RETURNING id, plate, tipo, marca, service, extras, amount, state, payment_method, token_publico, notas, cliente_nombre, cliente_telefono, inicio_lavado, listo_en, entregado_en, created_at`,
-      [nextState, paymentMethod, b.id, a.business.id, prevState]
-    );
-
-    if (updated.length === 0) {
-      throw new Error('Datos inválidos. El estado cambió; recargá el tablero.');
-    }
-
-    const job = updated[0];
-
-    // If marked as entregado with efectivo or transferencia, log to payments table
-    if (nextState === 'entregado' && (paymentMethod === 'efectivo' || paymentMethod === 'transferencia')) {
-      await query(
-        `INSERT INTO public.payments (business_id, job_id, monto, medio)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT DO NOTHING`,
-        [a.business.id, job.id, job.amount, paymentMethod]
+    // Update job state in Neon atomically inside a transaction
+    const job = await transaction(async (client) => {
+      const updateRes = await client.query(
+        `UPDATE public.wash_jobs 
+         SET state = $1, payment_method = $2
+         WHERE id = $3 AND business_id = $4 AND state = $5
+         RETURNING id, plate, tipo, marca, service, extras, amount, state, payment_method, token_publico, notas, cliente_nombre, cliente_telefono, inicio_lavado, listo_en, entregado_en, created_at`,
+        [nextState, paymentMethod, b.id, a.business.id, prevState]
       );
-    }
+
+      if (updateRes.rows.length === 0) {
+        throw new Error('Datos inválidos. El estado cambió; recargá el tablero.');
+      }
+
+      const updatedJob = updateRes.rows[0];
+
+      // If marked as entregado with efectivo or transferencia, log to payments table
+      if (nextState === 'entregado' && (paymentMethod === 'efectivo' || paymentMethod === 'transferencia')) {
+        await client.query(
+          `INSERT INTO public.payments (business_id, job_id, monto, medio)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT DO NOTHING`,
+          [a.business.id, updatedJob.id, updatedJob.amount, paymentMethod]
+        );
+      }
+
+      return updatedJob;
+    });
 
     return NextResponse.json({ job });
   } catch (e) {

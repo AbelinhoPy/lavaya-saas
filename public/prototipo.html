@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LavaYA! — Prototipo Interactivo de Nueva Interfaz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f8f5;
+      --card-bg: #ffffff;
+      --ink: #0f241d;
+      --ink-muted: #526b62;
+      --ink-subtle: #849e95;
+      --primary: #154734;
+      --primary-hover: #1e5c44;
+      --primary-light: #eaf3ed;
+      --accent: #c6ee38;
+      --accent-hover: #b5dc2d;
+      --accent-soft: #f4fae1;
+      --line: #e3ebe4;
+      --line-subtle: #edf3ee;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --info: #2563eb;
+      --info-light: #dbeafe;
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 36, 29, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 36, 29, 0.07);
+      --shadow-lg: 0 12px 32px rgba(15, 36, 29, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 80px;
+    }
+
+    /* HEADER SUPERIOR */
+    .app-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 10px 16px;
+    }
+    .header-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 19px;
+      box-shadow: 0 2px 6px rgba(21, 71, 52, 0.25);
+    }
+    .brand-title {
+      font-weight: 800;
+      font-size: 19px;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+    .brand-title span { color: #84a920; }
+    .brand-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: #edf5eb;
+      color: var(--primary);
+      border: 1px solid #c9dec8;
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .role-toggle {
+      display: flex;
+      align-items: center;
+      background: var(--primary-light);
+      border: 1px solid #cfded3;
+      border-radius: 20px;
+      padding: 3px 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .role-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 10px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      transition: all 0.15s ease;
+    }
+    .role-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .btn-quick-new {
+      background: var(--accent);
+      color: var(--primary);
+      border: 1px solid #b5d832;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(181, 220, 45, 0.3);
+      transition: all 0.15s ease;
+    }
+    .btn-quick-new:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .app-layout {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      gap: 20px;
+      padding: 20px 16px;
+    }
+
+    /* BARRA LATERAL (DESKTOP) */
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      color: var(--ink-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover {
+      background: #edf3ee;
+      color: var(--ink);
+    }
+    .nav-item.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: var(--primary);
+    }
+    .nav-item.active .nav-badge {
+      background: var(--accent);
+      color: var(--primary);
+    }
+
+    /* AREA DE CONTENIDO */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* BARRA DE NAVEGACIÓN INFERIOR (MÓVIL) */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 1px solid var(--line);
+      z-index: 100;
+      padding: 6px 12px;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+    }
+    .bottom-nav-inner {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .bnav-btn {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    .bnav-btn.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .bnav-icon { font-size: 20px; }
+
+    /* TARJETAS Y CONTENEDORES */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    /* KPIS EN RESUMEN */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--primary);
+    }
+    .kpi-card.warning::before { background: var(--warning); }
+    .kpi-card.danger::before { background: var(--danger); }
+    .kpi-card.accent::before { background: #8bb80d; }
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 6px 0 2px;
+      font-family: var(--font-mono);
+      letter-spacing: -0.5px;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    /* FILTROS Y BUSCADORES */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 340px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 9px 12px 9px 34px;
+      border-radius: var(--radius-sm);
+      border: 1px solid #d4ded6;
+      font-size: 13px;
+      font-family: var(--font);
+      background: #ffffff;
+    }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--ink-subtle);
+    }
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .pill-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--ink-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .pill-btn:hover { background: #edf3ee; }
+    .pill-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* KANBAN / LISTA DE VEHICULOS EN LAVADOS */
+    .kanban-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .column {
+      background: #f1f5f2;
+      border: 1px solid #e1ebe3;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 400px;
+    }
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0eae2;
+    }
+    .column-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .column-count {
+      background: #ffffff;
+      border: 1px solid #d5e2d7;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .job-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: 0 2px 6px rgba(15, 36, 29, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .job-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: #cbd8cf;
+    }
+    .job-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .job-plate {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      font-family: var(--font-mono);
+      color: var(--ink);
+    }
+    .job-type-icon { font-size: 18px; }
+    .job-vehicle-desc {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-top: -4px;
+    }
+    .job-service-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 3px 8px;
+      border-radius: 6px;
+      align-self: flex-start;
+    }
+    .job-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--ink-muted);
+      border-top: 1px dashed #e8efe9;
+      padding-top: 8px;
+      margin-top: 2px;
+    }
+    .job-amount {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--ink);
+      font-family: var(--font-mono);
+    }
+    .badge-pay {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-pay.efectivo { background: var(--success-light); color: #166534; border: 1px solid #bbf7d0; }
+    .badge-pay.transferencia { background: var(--info-light); color: #1e40af; border: 1px solid #bfdbfe; }
+    .badge-pay.pendiente { background: var(--warning-light); color: #92400e; border: 1px solid #fde68a; }
+
+    .btn-step {
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      margin-top: 4px;
+    }
+    .btn-step.primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .btn-step.primary:hover { background: var(--primary-hover); }
+    .btn-step.accent {
+      background: var(--accent);
+      color: var(--primary);
+      border-color: #b5d832;
+    }
+    .btn-step.accent:hover { background: var(--accent-hover); }
+    .btn-step.warning {
+      background: var(--warning-light);
+      color: #92400e;
+      border-color: #fde68a;
+    }
+    .btn-step.warning:hover { background: #fef08a; }
+
+    /* TABLAS PARA CAJA, STOCK Y CLIENTES */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background: #f8faf8;
+      padding: 10px 14px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--line);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line-subtle);
+      background: #ffffff;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafcfa; }
+
+    /* STOCK BAR */
+    .stock-bar-wrap {
+      background: #edf2ee;
+      border-radius: 6px;
+      height: 8px;
+      width: 120px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .stock-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: var(--success);
+    }
+    .stock-bar-fill.low { background: var(--warning); }
+    .stock-bar-fill.critical { background: var(--danger); }
+
+    /* MODAL FLOTANTE */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 36, 29, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 480px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(10px);
+      transition: transform 0.2s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-backdrop.open .modal-box {
+      transform: translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--ink-subtle);
+    }
+
+    /* FORMULARIOS */
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--ink);
+    }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1ded4;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font);
+      background: #ffffff;
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(21, 71, 52, 0.1);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* TOAST ALERT */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--primary);
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.25s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* VISTA OPERADOR RESTRINGIDA */
+    body.role-operator .owner-only {
+      display: none !important;
+    }
+
+    @media (max-width: 860px) {
+      .sidebar { display: none; }
+      .bottom-nav { display: block; }
+      .app-layout { padding: 14px 12px; }
+      .header-actions .brand-badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#" class="brand-wrap">
+          <div class="brand-logo">L!</div>
+          <div>
+            <div class="brand-title">LavaYA!<span>PRO</span></div>
+          </div>
+        </a>
+        <span class="brand-badge" id="business-badge">Lavadero Central · CDE</span>
+      </div>
+
+      <div class="header-actions">
+        <!-- Switcher de Rol (Demuestra permisos Dueño vs Operador) -->
+        <div class="role-toggle">
+          <span style="font-size: 10px; color: var(--ink-subtle); margin-right: 4px; padding-left: 4px;">ROL:</span>
+          <button class="role-btn active" id="btn-role-owner" onclick="setRole('owner')">Dueño 👑</button>
+          <button class="role-btn" id="btn-role-operator" onclick="setRole('operator')">Operador 🧽</button>
+        </div>
+
+        <button class="btn-quick-new" onclick="openReceptionModal()">
+          <span>+</span> Recibir vehículo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR (DESKTOP) -->
+    <aside class="sidebar">
+      <button class="nav-item active owner-only" id="nav-btn-resumen" onclick="switchTab('resumen')">
+        <span class="nav-item-left">📊 Resumen</span>
+      </button>
+      <button class="nav-item" id="nav-btn-lavados" onclick="switchTab('lavados')">
+        <span class="nav-item-left">🚗 Lavados en Pista</span>
+        <span class="nav-badge" id="badge-pista-count">3</span>
+      </button>
+      <button class="nav-item owner-only" id="nav-btn-caja" onclick="switchTab('caja')">
+        <span class="nav-item-left">💵 Caja y Finanzas</span>
+        <span class="nav-badge" style="background:#fef3c7; color:#92400e;" id="badge-pending-count">1</span>
+      </button>
+      <button class="nav-item owner-only" id="nav-btn-stock" onclick="switchTab('stock')">
+        <span class="nav-item-left">📦 Insumos y Stock</span>
+        <span class="nav-badge" style="background:#fee2e2; color:#b91c1c;" id="badge-stock-alert">2</span>
+      </button>
+      <button class="nav-item owner-only" id="nav-btn-clientes" onclick="switchTab('clientes')">
+        <span class="nav-item-left">👥 Clientes</span>
+      </button>
+      <button class="nav-item owner-only" id="nav-btn-config" onclick="switchTab('config')">
+        <span class="nav-item-left">⚙️ Configuración</span>
+      </button>
+
+      <div style="margin-top:auto; padding:12px; background:#edf4ee; border-radius:12px; font-size:11px; color:var(--ink-muted);">
+        <strong style="color:var(--primary); display:block; margin-bottom:2px;">PROTOTIPO INTERACTIVO</strong>
+        Probá todas las acciones, cambios de estado, cobros y stock en vivo.
+      </div>
+    </aside>
+
+    <!-- ÁREA DE CONTENIDO -->
+    <main class="main-content">
+
+      <!-- ============================================================== -->
+      <!-- PESTAÑA 1: RESUMEN GENERAL (SOLO DUEÑO)                        -->
+      <!-- ============================================================== -->
+      <section id="view-resumen" class="tab-view owner-only">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div>
+            <h1 style="font-size:22px; font-weight:800;">Hola, Abel.</h1>
+            <p style="font-size:13px; color:var(--ink-muted);">Estado general de tu lavadero hoy (Viernes, 6 de Noviembre · Ciudad del Este).</p>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="pill-btn active">Hoy</button>
+            <button class="pill-btn">Esta semana</button>
+            <button class="pill-btn">Este mes</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card" onclick="switchTab('lavados')" style="cursor:pointer;">
+            <div class="kpi-label">Vehículos en Pista <span>🚗</span></div>
+            <div class="kpi-value" id="kpi-pista">3</div>
+            <div class="kpi-sub">1 espera · 1 lavando · 1 listo</div>
+          </div>
+          <div class="kpi-card accent" onclick="switchTab('caja')" style="cursor:pointer;">
+            <div class="kpi-label">Cobrado Hoy <span>💵</span></div>
+            <div class="kpi-value" id="kpi-cobrado">₲ 90.000</div>
+            <div class="kpi-sub" id="kpi-cobrado-sub">₲ 50.000 efectivo · ₲ 40.000 transf.</div>
+          </div>
+          <div class="kpi-card warning" onclick="switchTab('caja')" style="cursor:pointer;">
+            <div class="kpi-label">Pendiente por Cobrar <span>⏳</span></div>
+            <div class="kpi-value" style="color:var(--warning);" id="kpi-pendiente">₲ 40.000</div>
+            <div class="kpi-sub" id="kpi-pendiente-sub">1 entrega pendiente</div>
+          </div>
+          <div class="kpi-card danger" onclick="switchTab('caja')" style="cursor:pointer;">
+            <div class="kpi-label">Gastos Menores <span>📉</span></div>
+            <div class="kpi-value" style="color:var(--danger);" id="kpi-gastos">₲ 25.000</div>
+            <div class="kpi-sub">1 compra de insumos</div>
+          </div>
+          <div class="kpi-card" onclick="switchTab('caja')" style="cursor:pointer; background:#f4f9f2;">
+            <div class="kpi-label" style="color:var(--primary); font-weight:700;">Efectivo en Gaveta <span>💼</span></div>
+            <div class="kpi-value" style="color:var(--primary);" id="kpi-gaveta">₲ 175.000</div>
+            <div class="kpi-sub">₲ 150k inicial + ₲ 50k - ₲ 25k</div>
+          </div>
+          <div class="kpi-card danger" onclick="switchTab('stock')" style="cursor:pointer;">
+            <div class="kpi-label">Insumos bajo mínimo <span>⚠️</span></div>
+            <div class="kpi-value" style="color:var(--danger);" id="kpi-insumos">2</div>
+            <div class="kpi-sub">Cera y Desengrasante por reponer</div>
+          </div>
+        </div>
+
+        <!-- ACCESOS RÁPIDOS Y ATENCIÓN PRIORITARIA -->
+        <div class="card" style="background:#fffcf0; border-color:#fae8b2;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:24px;">🔔</span>
+              <div>
+                <strong style="font-size:14px; color:#92400e;">Atención requerida en caja y stock:</strong>
+                <p style="font-size:12px; color:#78350f; margin:2px 0 0;">
+                  Tenés <strong>₲ 40.000 pendientes de cobro</strong> de la Honda CB 190 entregada y <strong>2 productos de stock</strong> bajo el mínimo de seguridad.
+                </p>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-step warning" style="width:auto; padding:6px 14px;" onclick="switchTab('caja')">Cobrar deuda →</button>
+              <button class="btn-step accent" style="width:auto; padding:6px 14px;" onclick="switchTab('stock')">Reponer stock →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================== -->
+      <!-- PESTAÑA 2: LAVADOS EN PISTA (OPERADOR Y DUEÑO)                 -->
+      <!-- ============================================================== -->
+      <section id="view-lavados" class="tab-view" style="display:none;">
+        <div class="filter-bar">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="search-plate" placeholder="Buscar por chapa (ej: BCF 482)..." oninput="filterJobs()">
+          </div>
+
+          <div class="filter-pills">
+            <button class="pill-btn active" onclick="setJobFilter('all', this)">Todos (<span id="count-all">4</span>)</button>
+            <button class="pill-btn" onclick="setJobFilter('espera', this)">En espera (<span id="count-espera">1</span>)</button>
+            <button class="pill-btn" onclick="setJobFilter('lavando', this)">Lavando (<span id="count-lavando">1</span>)</button>
+            <button class="pill-btn" onclick="setJobFilter('listo', this)">Listos (<span id="count-listo">1</span>)</button>
+            <button class="pill-btn" onclick="setJobFilter('entregado', this)">Entregados (<span id="count-entregado">1</span>)</button>
+          </div>
+        </div>
+
+        <!-- KANBAN COLUMNS -->
+        <div class="kanban-grid" id="kanban-container">
+          <!-- Columna 1: En Espera -->
+          <div class="column" id="col-espera">
+            <div class="column-header">
+              <span class="column-title">⏳ 1. En espera</span>
+              <span class="column-count" id="badge-col-espera">1</span>
+            </div>
+            <div class="column-cards" id="cards-espera"></div>
+          </div>
+
+          <!-- Columna 2: Lavando -->
+          <div class="column" id="col-lavando">
+            <div class="column-header">
+              <span class="column-title">🧽 2. Lavando en pista</span>
+              <span class="column-count" id="badge-col-lavando">1</span>
+            </div>
+            <div class="column-cards" id="cards-lavando"></div>
+          </div>
+
+          <!-- Columna 3: Listos -->
+          <div class="column" id="col-listo">
+            <div class="column-header">
+              <span class="column-title">✨ 3. Listos para entrega</span>
+              <span class="column-count" id="badge-col-listo">1</span>
+            </div>
+            <div class="column-cards" id="cards-listo"></div>
+          </div>
+
+          <!-- Columna 4: Entregados -->
+          <div class="column" id="col-entregado">
+            <div class="column-header">
+              <span class="column-title">✓ 4. Entregados</span>
+              <span class="column-count" id="badge-col-entregado">1</span>
+            </div>
+            <div class="column-cards" id="cards-entregado"></div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================== -->
+      <!-- PESTAÑA 3: CAJA Y CONTROL FINANCIERO (SOLO DUEÑO)              -->
+      <!-- ============================================================== -->
+      <section id="view-caja" class="tab-view owner-only" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h1 style="font-size:22px; font-weight:800;">Arqueo y Control de Caja</h1>
+            <p style="font-size:13px; color:var(--ink-muted);">Monitoreo diario de cobros, transferencias, gastos y efectivo físico en gaveta.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="pill-btn" onclick="openAperturaModal()">💼 Fondo de Caja (Apertura)</button>
+            <button class="pill-btn" onclick="openCierreModal()" style="background:#edf7ec; color:var(--primary); border-color:#b8dbb6; font-weight:700;">🔒 Cerrar Caja / Arqueo</button>
+            <button class="btn-quick-new" onclick="exportarExcelCSV()" style="padding:7px 14px; font-size:12px;">📥 Exportar Excel</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card accent">
+            <div class="kpi-label">Cobros Efectivo <span>💵</span></div>
+            <div class="kpi-value" id="caja-efectivo">₲ 50.000</div>
+            <div class="kpi-sub">Ingresa a caja física</div>
+          </div>
+          <div class="kpi-card" style="background:#f4f8fe;">
+            <div class="kpi-label">Transferencias / QR <span>📱</span></div>
+            <div class="kpi-value" style="color:#1d4ed8;" id="caja-transf">₲ 40.000</div>
+            <div class="kpi-sub">Directo a banco / SIPAP</div>
+          </div>
+          <div class="kpi-card warning">
+            <div class="kpi-label">Pendiente de Cobro <span>⏳</span></div>
+            <div class="kpi-value" style="color:var(--warning);" id="caja-pendientes">₲ 40.000</div>
+            <div class="kpi-sub">Por cobrar a clientes</div>
+          </div>
+          <div class="kpi-card danger">
+            <div class="kpi-label">Gastos del Día <span>📉</span></div>
+            <div class="kpi-value" style="color:var(--danger);" id="caja-gastos">₲ 25.000</div>
+            <div class="kpi-sub">Compras o insumos</div>
+          </div>
+          <div class="kpi-card" style="background:#eaf4ed; border-color:#b5d8bd;">
+            <div class="kpi-label" style="font-weight:700; color:var(--primary);">Efectivo Físico Esperado</div>
+            <div class="kpi-value" style="color:var(--primary);" id="caja-esperada">₲ 175.000</div>
+            <div class="kpi-sub">Fondo Inicial (₲150k) + Efectivo - Gastos</div>
+          </div>
+        </div>
+
+        <!-- COBROS PENDIENTES DE CLIENTES -->
+        <div class="card" style="border-left: 4px solid var(--warning);">
+          <div class="card-title">
+            <span style="color:#92400e; display:flex; align-items:center; gap:8px;">
+              ⏳ Deudas y Cobros Pendientes (<span id="caja-pending-count">1</span>)
+            </span>
+            <span style="font-size:14px; font-weight:700; color:#92400e;" id="caja-pending-sum">₲ 40.000 total adeudado</span>
+          </div>
+          <p style="font-size:12px; color:var(--ink-muted); margin-bottom:12px;">
+            Vehículos que ya fueron entregados sin abonar la totalidad. Hacé clic en "Registrar cobro" cuando el cliente pague.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Vehículo</th>
+                  <th>Cliente</th>
+                  <th>Servicio</th>
+                  <th>Total Deuda</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="table-pending-jobs">
+                <!-- Se llena dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- GASTOS Y REGISTRO DE EGRESOS -->
+        <div class="form-row">
+          <div class="card">
+            <div class="card-title">
+              <span>📉 Registrar Gasto o Compra</span>
+            </div>
+            <form id="form-gasto" onsubmit="handleRegistrarGasto(event)">
+              <div class="form-group">
+                <label class="form-label">Concepto del gasto</label>
+                <input type="text" class="form-input" id="gasto-concepto" placeholder="Ej: Champú concentrado 5L" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Monto en Gs.</label>
+                  <input type="number" class="form-input" id="gasto-monto" placeholder="25000" min="1000" step="500" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Categoría</label>
+                  <select class="form-select" id="gasto-cat">
+                    <option value="insumos">Insumos de lavado</option>
+                    <option value="mantenimiento">Mantenimiento de hidros</option>
+                    <option value="servicios">Servicios (luz, agua)</option>
+                    <option value="varios">Varios / Café / Insumos</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">¿Cómo se pagó?</label>
+                <select class="form-select" id="gasto-medio">
+                  <option value="efectivo">Efectivo (de la caja del día)</option>
+                  <option value="transferencia">Transferencia de cuenta del dueño</option>
+                </select>
+              </div>
+              <button type="submit" class="btn-step primary">+ Asentar egreso en caja</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span>📋 Últimos Egresos Registrados</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Concepto</th>
+                    <th>Categoría</th>
+                    <th>Medio</th>
+                    <th>Monto</th>
+                  </tr>
+                </thead>
+                <tbody id="table-gastos">
+                  <!-- Se llena dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================== -->
+      <!-- PESTAÑA 4: STOCK DE INSUMOS (SOLO DUEÑO)                       -->
+      <!-- ============================================================== -->
+      <section id="view-stock" class="tab-view owner-only" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h1 style="font-size:22px; font-weight:800;">Control de Insumos y Stock</h1>
+            <p style="font-size:13px; color:var(--ink-muted);">Monitoreo de productos químicos, paños, compras y recetas estimadas de consumo por lavado.</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-quick-new" onclick="openCompraInsumoModal()">+ Registrar Compra</button>
+            <button class="pill-btn" onclick="openAjusteStockModal()">⚖️ Ajustar Stock / Merma</button>
+          </div>
+        </div>
+
+        <!-- TABLA DE PRODUCTOS -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧴 Inventario de Productos Químicos e Insumos</span>
+            <span style="font-size:12px; font-weight:600; color:var(--ink-muted);">Conversión: 1 Litro = 1.000 ml</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Insumo</th>
+                  <th>Unidad</th>
+                  <th>Stock Actual</th>
+                  <th>Mínimo Seguro</th>
+                  <th>Estado</th>
+                  <th>Costo Prom.</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="table-stock-items">
+                <!-- Se llena dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RECETAS ESTIMADAS POR SERVICIO -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧪 Recetas Estimadas de Consumo por Lavado</span>
+            <span style="font-size:12px; font-weight:600; color:#15803d;">Costo químico estimado: ~₲ 3.500 / auto</span>
+          </div>
+          <p style="font-size:12px; color:var(--ink-muted); margin-bottom:14px;">
+            LavaYA! calcula el costo químico promedio por servicio para que conozcas tu margen bruto sin inventar cifras contables ni duplicar la compra del producto.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Servicio</th>
+                  <th>Insumos que consume (estimado)</th>
+                  <th>Costo Insumo Estimado</th>
+                  <th>Tarifa al Público</th>
+                  <th>Margen Bruto Químico</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>🚗 Lavado Completo Auto</strong></td>
+                  <td>50 ml Champú + 20 ml Silicona</td>
+                  <td>₲ 3.200</td>
+                  <td><strong>₲ 50.000</strong></td>
+                  <td><span class="badge-pay efectivo">93.6% margen</span></td>
+                </tr>
+                <tr>
+                  <td><strong>✨ Lavado Premium + Cera</strong></td>
+                  <td>60 ml Champú + 30 ml Cera Carnauba + 25 ml Silicona</td>
+                  <td>₲ 6.800</td>
+                  <td><strong>₲ 80.000</strong></td>
+                  <td><span class="badge-pay efectivo">91.5% margen</span></td>
+                </tr>
+                <tr>
+                  <td><strong>🏍️ Lavado Completo Moto</strong></td>
+                  <td>30 ml Champú + 15 ml Desengrasante Cadena</td>
+                  <td>₲ 2.100</td>
+                  <td><strong>₲ 25.000</strong></td>
+                  <td><span class="badge-pay efectivo">91.6% margen</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================== -->
+      <!-- PESTAÑA 5: CLIENTES Y FLOTA (SOLO DUEÑO)                       -->
+      <!-- ============================================================== -->
+      <section id="view-clientes" class="tab-view owner-only" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div>
+            <h1 style="font-size:22px; font-weight:800;">Directorio de Clientes</h1>
+            <p style="font-size:13px; color:var(--ink-muted);">Historial de vehículos atendidos, visitas y saldos adeudados.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Teléfono / WhatsApp</th>
+                  <th>Vehículos Registrados</th>
+                  <th>Total Lavados</th>
+                  <th>Saldo Pendiente</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="table-clientes">
+                <!-- Se llena dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================== -->
+      <!-- PESTAÑA 6: CONFIGURACIÓN Y PERMISOS                            -->
+      <!-- ============================================================== -->
+      <section id="view-config" class="tab-view owner-only" style="display:none;">
+        <div style="margin-bottom:16px;">
+          <h1 style="font-size:22px; font-weight:800;">Configuración de tu Lavadero</h1>
+          <p style="font-size:13px; color:var(--ink-muted);">Ajustes de cuenta, usuarios operadores y tarifas oficiales.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>🛡️ Perfiles y Permisos de Acceso</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div style="background:#f8faf8; border:1px solid var(--line); border-radius:12px; padding:16px;">
+              <strong style="display:block; font-size:14px; color:var(--primary); margin-bottom:4px;">👑 Rol Dueño (Abel Núñez)</strong>
+              <p style="font-size:12px; color:var(--ink-muted);">Acceso total: métricas de dinero, apertura/cierre de caja, compras, recetas de stock, clientes y exportación a Excel.</p>
+            </div>
+            <div style="background:#f8faf8; border:1px solid var(--line); border-radius:12px; padding:16px;">
+              <strong style="display:block; font-size:14px; color:#1e40af; margin-bottom:4px;">🧽 Rol Operador en Pista</strong>
+              <p style="font-size:12px; color:var(--ink-muted);">Solo ve la pestaña de <strong>Lavados</strong> para recibir autos y pasar etapas. No tiene acceso a números de caja, costos ni balances privados.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (MÓVIL) -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bnav-btn active" onclick="switchTab('lavados')">
+        <span class="bnav-icon">🚗</span>
+        <span>Lavados</span>
+      </button>
+      <button class="bnav-btn owner-only" onclick="switchTab('caja')">
+        <span class="bnav-icon">💵</span>
+        <span>Caja</span>
+      </button>
+      <button class="bnav-btn owner-only" onclick="switchTab('stock')">
+        <span class="bnav-icon">📦</span>
+        <span>Stock</span>
+      </button>
+      <button class="bnav-btn owner-only" onclick="switchTab('resumen')">
+        <span class="bnav-icon">📊</span>
+        <span>Resumen</span>
+      </button>
+    </div>
+  </nav>
+
+
+  <!-- ============================================================== -->
+  <!-- MODALES INTERACTIVOS                                           -->
+  <!-- ============================================================== -->
+
+  <!-- MODAL: RECIBIR VEHÍCULO -->
+  <div class="modal-backdrop" id="modal-reception">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">🚗 Recibir nuevo vehículo</div>
+        <button class="btn-close" onclick="closeModal('modal-reception')">&times;</button>
+      </div>
+
+      <form onsubmit="handleCrearVehiculo(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tipo de vehículo</label>
+            <select class="form-select" id="rec-tipo" onchange="actualizarServiciosModal()">
+              <option value="auto">🚗 Automóvil / Camioneta</option>
+              <option value="moto">🏍️ Motocicleta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Número de Chapa / Placa</label>
+            <input type="text" class="form-input" id="rec-placa" placeholder="BCF 482" required oninput="autoBuscarCliente(this.value)">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Marca / Modelo</label>
+            <input type="text" class="form-input" id="rec-marca" placeholder="Toyota Corolla">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <input type="text" class="form-input" id="rec-color" placeholder="Blanco">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Servicio Principal</label>
+          <select class="form-select" id="rec-servicio" onchange="calcularTotalRecepcion()">
+            <!-- Se llena con JS -->
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Adicionales</label>
+          <div style="display:grid; gap:6px;" id="rec-extras">
+            <!-- Checkboxes generados dinámicamente -->
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre del Cliente (Opcional)</label>
+            <input type="text" class="form-input" id="rec-cliente" placeholder="Martín Benítez">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teléfono / WhatsApp (Opcional)</label>
+            <input type="text" class="form-input" id="rec-telefono" placeholder="0981 123 456">
+          </div>
+        </div>
+
+        <div style="background:#f4f8f4; border:1px solid #d4e7d7; border-radius:10px; padding:12px; margin:16px 0; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span style="font-size:11px; color:var(--ink-muted); text-transform:uppercase;">TOTAL DEL SERVICIO</span>
+            <div style="font-size:22px; font-weight:800; color:var(--primary); font-family:var(--font-mono);" id="rec-total-display">₲ 50.000</div>
+          </div>
+          <span style="font-size:11px; color:var(--ink-muted);">Cobro antes o después de lavar</span>
+        </div>
+
+        <button type="submit" class="btn-step primary" style="padding:12px; font-size:14px;">+ Ingresar a pista de lavado</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- MODAL: COBRAR O ENTREGAR VEHÍCULO -->
+  <div class="modal-backdrop" id="modal-cobro">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">💳 Registrar cobro de vehículo</div>
+        <button class="btn-close" onclick="closeModal('modal-cobro')">&times;</button>
+      </div>
+
+      <div style="background:#f1f7f2; border-radius:10px; padding:16px; margin-bottom:18px; text-align:center;">
+        <span style="font-size:12px; color:var(--ink-muted); text-transform:uppercase;">Importe a cobrar</span>
+        <div style="font-size:32px; font-weight:800; color:var(--primary); font-family:var(--font-mono); margin:4px 0;" id="modal-cobro-monto">₲ 40.000</div>
+        <div style="font-size:13px; font-weight:600;" id="modal-cobro-vehiculo">Honda CB 190 (BCD 165)</div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label class="form-label">¿Cómo se liquida el cobro?:</label>
+        <div style="display:grid; gap:8px;">
+          <button type="button" class="btn-step" id="pay-opt-efectivo" onclick="selectPayOption('efectivo')" style="justify-content:flex-start; padding:12px; background:#edf7ec; border:2px solid var(--success); color:#166534;">
+            <span style="font-size:18px;">💵</span>
+            <div style="text-align:left;">
+              <strong style="display:block;">Efectivo (en mano)</strong>
+              <small style="font-weight:400; color:var(--ink-muted);">Ingresa directamente a la gaveta de caja</small>
+            </div>
+          </button>
+
+          <button type="button" class="btn-step" id="pay-opt-transferencia" onclick="selectPayOption('transferencia')" style="justify-content:flex-start; padding:12px; background:#ffffff; border:1px solid var(--line); color:var(--ink);">
+            <span style="font-size:18px;">📱</span>
+            <div style="text-align:left;">
+              <strong style="display:block;">Transferencia Bancaria / QR</strong>
+              <small style="font-weight:400; color:var(--ink-muted);">SIPAP / Tigo Money / Cuenta de banco</small>
+            </div>
+          </button>
+
+          <button type="button" class="btn-step" id="pay-opt-pendiente" onclick="selectPayOption('pendiente')" style="justify-content:flex-start; padding:12px; background:#ffffff; border:1px solid var(--line); color:var(--ink);">
+            <span style="font-size:18px;">⏳</span>
+            <div style="text-align:left;">
+              <strong style="display:block; color:#92400e;">Dejar como Pago Pendiente</strong>
+              <small style="font-weight:400; color:#b45309;">El cliente retira el vehículo y abona después</small>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-step primary" style="padding:12px; font-size:14px;" onclick="confirmarCobroModal()">
+        Confirmar operación ✓
+      </button>
+    </div>
+  </div>
+
+
+  <!-- MODAL: REGISTRAR COMPRA DE INSUMO -->
+  <div class="modal-backdrop" id="modal-compra-insumo">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">📦 Registrar compra de insumos</div>
+        <button class="btn-close" onclick="closeModal('modal-compra-insumo')">&times;</button>
+      </div>
+
+      <form onsubmit="handleRegistrarCompraInsumo(event)">
+        <div class="form-group">
+          <label class="form-label">Producto a reponer</label>
+          <select class="form-select" id="compra-insumo-id">
+            <option value="1">Champú Siliconado Neutro</option>
+            <option value="2">Cera Carnauba Líquida (⚠️ Stock Bajo)</option>
+            <option value="3">Desengrasante de Chasis (⚠️ Stock Bajo)</option>
+            <option value="4">Silicona Protectora de Neumáticos</option>
+            <option value="5">Paños de Microfibra 40x40</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Cantidad a ingresar</label>
+            <input type="number" class="form-input" id="compra-cantidad" placeholder="5" min="1" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unidad de medida</label>
+            <select class="form-select" id="compra-unidad">
+              <option value="L">Litros (L)</option>
+              <option value="ml">Mililitros (ml)</option>
+              <option value="unidades">Unidades</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Costo total pagado (Gs.)</label>
+            <input type="number" class="form-input" id="compra-costo" placeholder="75000" min="1000" step="500" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Proveedor</label>
+            <input type="text" class="form-input" id="compra-proveedor" placeholder="Distribuidora CDE">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">¿Cómo se abonó esta compra?</label>
+          <select class="form-select" id="compra-pago-tipo">
+            <option value="efectivo">Efectivo (Descontar de la caja del día)</option>
+            <option value="transferencia">Transferencia bancaria del dueño</option>
+            <option value="deuda">Crédito a 30 días (Deuda con proveedor)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-step primary" style="padding:12px; font-size:14px;">+ Ingresar al stock y asentar egreso</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- MODAL: CIERRE DE CAJA / ARQUEO -->
+  <div class="modal-backdrop" id="modal-cierre">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">🔒 Cierre de Caja y Arqueo Físico</div>
+        <button class="btn-close" onclick="closeModal('modal-cierre')">&times;</button>
+      </div>
+
+      <div style="background:#f8faf8; border-radius:10px; padding:14px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+          <span>Fondo inicial de apertura:</span>
+          <strong>₲ 150.000</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+          <span>Cobros en efectivo sumados:</span>
+          <strong style="color:var(--success);">+ <span id="cierre-cobros-eff">₲ 50.000</span></strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+          <span>Gastos en efectivo restados:</span>
+          <strong style="color:var(--danger);">- <span id="cierre-gastos-eff">₲ 25.000</span></strong>
+        </div>
+        <div style="border-top:1px dashed #d1dfd5; margin-top:6px; padding-top:6px; display:flex; justify-content:space-between; font-size:15px; font-weight:800; color:var(--primary);">
+          <span>Efectivo esperado por sistema:</span>
+          <span id="cierre-esperado-val">₲ 175.000</span>
+        </div>
+      </div>
+
+      <form onsubmit="handleConfirmarCierre(event)">
+        <div class="form-group">
+          <label class="form-label">Efectivo físico contado en mano (Gs.)</label>
+          <input type="number" class="form-input" id="cierre-contado" placeholder="175000" required oninput="calcularDiferenciaArqueo(this.value)">
+        </div>
+
+        <div id="cierre-diferencia-box" style="padding:10px; border-radius:8px; margin-bottom:14px; font-size:13px; display:none;">
+          <!-- Calculado con JS -->
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notas o justificación del arqueo</label>
+          <input type="text" class="form-input" id="cierre-notas" placeholder="Cierre normal del turno tarde sin novedades">
+        </div>
+
+        <button type="submit" class="btn-step primary" style="padding:12px; font-size:14px;">Confirmar y asentar arqueo de caja</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // ESTADO GENERAL EN MEMORIA (DATOS DE MUESTRA REALISTAS)
+    let currentRole = 'owner'; // 'owner' o 'operator'
+    let currentTab = 'resumen';
+    let currentFilter = 'all';
+
+    let initialCash = 150000; // Fondo de caja de apertura
+
+    let jobs = [
+      {
+        id: 'job-1',
+        plate: 'BCF 482',
+        tipo: 'auto',
+        marca: 'Toyota Corolla Blanco',
+        service: 'Lavado Completo Auto',
+        extras: ['Encerado Carnauba'],
+        amount: 80000,
+        state: 'lavando', // espera | lavando | listo | entregado
+        payment_method: null, // null | efectivo | transferencia | pendiente
+        cliente_nombre: 'Martín Benítez',
+        cliente_telefono: '0981 123 456',
+        tiempo_ingreso: 'Hace 22 min'
+      },
+      {
+        id: 'job-2',
+        plate: 'AAKD 793',
+        tipo: 'auto',
+        marca: 'Kia Sportage Gris',
+        service: 'Lavado Básico Exterior',
+        extras: [],
+        amount: 35000,
+        state: 'espera',
+        payment_method: null,
+        cliente_nombre: 'Carla Duarte',
+        cliente_telefono: '0971 789 012',
+        tiempo_ingreso: 'Hace 8 min'
+      },
+      {
+        id: 'job-3',
+        plate: 'BCD 165',
+        tipo: 'moto',
+        marca: 'Honda CB 190 Roja',
+        service: 'Lavado Completo Moto',
+        extras: ['Silicona y Perfume'],
+        amount: 40000,
+        state: 'entregado',
+        payment_method: 'pendiente', // ENTREGADA CON PAGO PENDIENTE
+        cliente_nombre: 'Rodrigo Vera',
+        cliente_telefono: '0983 555 777',
+        tiempo_ingreso: 'Hace 50 min'
+      },
+      {
+        id: 'job-4',
+        plate: 'AAL 520',
+        tipo: 'auto',
+        marca: 'Hyundai HB20 Negro',
+        service: 'Lavado Completo Auto',
+        extras: [],
+        amount: 50000,
+        state: 'entregado',
+        payment_method: 'efectivo',
+        cliente_nombre: 'Elena Giménez',
+        cliente_telefono: '0991 333 222',
+        tiempo_ingreso: 'Hace 2 horas'
+      }
+    ];
+
+    let expenses = [
+      { id: 'exp-1', concepto: 'Bolsa de franelas y esponjas', categoria: 'insumos', monto: 25000, medio: 'efectivo', hora: '10:30' }
+    ];
+
+    let stockItems = [
+      { id: 1, nombre: 'Champú Siliconado Neutro', unidad: 'Litros', stock: 12.5, min: 5, costo: 15000, status: 'ok' },
+      { id: 2, nombre: 'Cera Carnauba Líquida', unidad: 'Litros', stock: 0.8, min: 2.0, costo: 45000, status: 'low' },
+      { id: 3, nombre: 'Desengrasante de Chasis', unidad: 'Litros', stock: 2.0, min: 4.0, costo: 22000, status: 'low' },
+      { id: 4, nombre: 'Silicona Protectora de Neumáticos', unidad: 'Litros', stock: 5.0, min: 2.0, costo: 18000, status: 'ok' },
+      { id: 5, nombre: 'Paños de Microfibra 40x40', unidad: 'Unidades', stock: 18, min: 10, costo: 6000, status: 'ok' }
+    ];
+
+    const SERVICES_CONFIG = [
+      { id: 's1', tipo: 'auto', nombre: 'Lavado Completo Auto', precio: 50000 },
+      { id: 's2', tipo: 'auto', nombre: 'Lavado Básico Exterior', precio: 35000 },
+      { id: 's3', tipo: 'auto', nombre: 'Lavado Premium + Cera', precio: 80000 },
+      { id: 's4', tipo: 'moto', nombre: 'Lavado Completo Moto', precio: 25000 },
+      { id: 's5', tipo: 'moto', nombre: 'Lavado Premium Moto + Cera', precio: 40000 }
+    ];
+
+    const EXTRAS_CONFIG = [
+      { id: 'e1', nombre: 'Encerado Carnauba Líquida', precio: 30000 },
+      { id: 'e2', nombre: 'Silicona y Perfume Premium', precio: 15000 },
+      { id: 'e3', nombre: 'Limpieza profunda de tapizado', precio: 60000 }
+    ];
+
+    let selectedJobForPayment = null;
+    let selectedPayChoice = 'efectivo';
+
+    // FORMATOS Y UTILIDADES
+    function formatGs(val) {
+      return '₲ ' + new Intl.NumberFormat('es-PY').format(val || 0);
+    }
+
+    function showToast(msg) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `<span>✓</span> <div>${msg}</div>`;
+      c.appendChild(t);
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateY(10px)';
+        t.style.transition = 'all 0.3s ease';
+        setTimeout(() => t.remove(), 300);
+      }, 3500);
+    }
+
+    // GESTIÓN DE ROLES (DUEÑO VS OPERADOR)
+    function setRole(role) {
+      currentRole = role;
+      document.body.classList.toggle('role-operator', role === 'operator');
+      document.getElementById('btn-role-owner').classList.toggle('active', role === 'owner');
+      document.getElementById('btn-role-operator').classList.toggle('active', role === 'operator');
+
+      if (role === 'operator') {
+        switchTab('lavados');
+        showToast('Vista Operador activada: Acceso enfocado a Pista de Lavados.');
+      } else {
+        switchTab('resumen');
+        showToast('Vista Dueño activada: Acceso total a Finanzas, Stock y Control.');
+      }
+    }
+
+    // CAMBIO DE PESTAÑAS
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-view').forEach(v => v.style.display = 'none');
+      const target = document.getElementById('view-' + tab);
+      if (target) target.style.display = 'block';
+
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+      const activeNav = document.getElementById('nav-btn-' + tab);
+      if (activeNav) activeNav.classList.add('active');
+
+      document.querySelectorAll('.bnav-btn').forEach(btn => btn.classList.remove('active'));
+
+      renderAll();
+    }
+
+    // RENDERIZADO GLOBAL
+    function renderAll() {
+      renderKanban();
+      renderCaja();
+      renderStock();
+      renderClientes();
+      updateKpis();
+    }
+
+    function updateKpis() {
+      const pistaJobs = jobs.filter(j => j.state !== 'entregado');
+      document.getElementById('kpi-pista').innerText = pistaJobs.length;
+      document.getElementById('badge-pista-count').innerText = pistaJobs.length;
+
+      const eff = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'efectivo').reduce((s, j) => s + j.amount, 0);
+      const tr = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'transferencia').reduce((s, j) => s + j.amount, 0);
+      const pend = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'pendiente').reduce((s, j) => s + j.amount, 0);
+      const gastos = expenses.reduce((s, e) => s + e.monto, 0);
+
+      document.getElementById('kpi-cobrado').innerText = formatGs(eff + tr);
+      document.getElementById('kpi-cobrado-sub').innerText = `${formatGs(eff)} ef. · ${formatGs(tr)} transf.`;
+      document.getElementById('kpi-pendiente').innerText = formatGs(pend);
+      document.getElementById('kpi-gastos').innerText = formatGs(gastos);
+
+      const gaveta = initialCash + eff - expenses.filter(e => e.medio === 'efectivo').reduce((s, e) => s + e.monto, 0);
+      document.getElementById('kpi-gaveta').innerText = formatGs(gaveta);
+
+      const lowStock = stockItems.filter(s => s.stock <= s.min);
+      document.getElementById('kpi-insumos').innerText = lowStock.length;
+      document.getElementById('badge-stock-alert').innerText = lowStock.length;
+    }
+
+    // RENDER KANBAN DE LAVADOS
+    function renderKanban() {
+      const q = document.getElementById('search-plate').value.trim().toUpperCase();
+      const filtered = jobs.filter(j => {
+        const matchPlate = !q || j.plate.includes(q) || (j.cliente_nombre && j.cliente_nombre.toUpperCase().includes(q));
+        const matchFilter = currentFilter === 'all' || j.state === currentFilter;
+        return matchPlate && matchFilter;
+      });
+
+      const cols = { espera: [], lavando: [], listo: [], entregado: [] };
+      jobs.forEach(j => {
+        if (!q || j.plate.includes(q)) {
+          if (cols[j.state]) cols[j.state].push(j);
+        }
+      });
+
+      document.getElementById('count-all').innerText = jobs.length;
+      document.getElementById('count-espera').innerText = cols.espera.length;
+      document.getElementById('count-lavando').innerText = cols.lavando.length;
+      document.getElementById('count-listo').innerText = cols.listo.length;
+      document.getElementById('count-entregado').innerText = cols.entregado.length;
+
+      ['espera', 'lavando', 'listo', 'entregado'].forEach(st => {
+        const el = document.getElementById('cards-' + st);
+        document.getElementById('badge-col-' + st).innerText = cols[st].length;
+        el.innerHTML = '';
+
+        cols[st].forEach(job => {
+          const card = document.createElement('div');
+          card.className = 'job-card';
+
+          let payBadge = '';
+          if (job.payment_method === 'efectivo') {
+            payBadge = '<span class="badge-pay efectivo">Cobrado Efectivo 💵</span>';
+          } else if (job.payment_method === 'transferencia') {
+            payBadge = '<span class="badge-pay transferencia">Cobrado Transf. 📱</span>';
+          } else if (job.payment_method === 'pendiente') {
+            payBadge = '<span class="badge-pay pendiente">Cobro Pendiente ⏳</span>';
+          } else {
+            payBadge = '<span style="font-size:10px; color:var(--ink-subtle);">A cobrar al entregar</span>';
+          }
+
+          let actionBtn = '';
+          if (job.state === 'espera') {
+            actionBtn = `<button class="btn-step primary" onclick="advanceJob('${job.id}', 'lavando')">Iniciar lavado 🚿</button>`;
+          } else if (job.state === 'lavando') {
+            actionBtn = `<button class="btn-step accent" onclick="advanceJob('${job.id}', 'listo')">Marcar terminado ✨</button>`;
+          } else if (job.state === 'listo') {
+            actionBtn = `<button class="btn-step accent" onclick="openCobroModal('${job.id}')">Cobrar y Entregar 💳</button>`;
+          } else if (job.state === 'entregado' && job.payment_method === 'pendiente') {
+            actionBtn = `<button class="btn-step warning" onclick="openCobroModal('${job.id}')">Cobrar deuda ₲ ${new Intl.NumberFormat('es-PY').format(job.amount)}</button>`;
+          }
+
+          card.innerHTML = `
+            <div class="job-card-top">
+              <div>
+                <div class="job-plate">${job.plate}</div>
+                <div class="job-vehicle-desc">${job.marca || ''}</div>
+              </div>
+              <span class="job-type-icon">${job.tipo === 'moto' ? '🏍️' : '🚗'}</span>
+            </div>
+            <div>
+              <span class="job-service-tag">${job.service}</span>
+              ${job.extras.length > 0 ? `<div style="font-size:11px; color:var(--ink-muted); margin-top:3px;">+ ${job.extras.join(', ')}</div>` : ''}
+            </div>
+            <div class="job-info-row">
+              <span>${job.tiempo_ingreso}</span>
+              <span class="job-amount">${formatGs(job.amount)}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+              ${payBadge}
+              ${job.cliente_nombre ? `<small style="font-size:11px; color:var(--ink-muted);">${job.cliente_nombre}</small>` : ''}
+            </div>
+            ${actionBtn}
+          `;
+          el.appendChild(card);
+        });
+
+        if (cols[st].length === 0) {
+          el.innerHTML = '<div style="text-align:center; padding:30px 10px; font-size:12px; color:var(--ink-subtle);">Sin vehículos</div>';
+        }
+      });
+    }
+
+    function filterJobs() {
+      renderKanban();
+    }
+
+    function setJobFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-pills .pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderKanban();
+    }
+
+    // TRANSICIÓN DE ETAPAS
+    function advanceJob(id, nextState) {
+      const job = jobs.find(j => j.id === id);
+      if (!job) return;
+      job.state = nextState;
+      showToast(`Vehículo ${job.plate} avanzado a: ${nextState.toUpperCase()}`);
+      renderAll();
+    }
+
+    // MODAL DE COBRO / ENTREGA
+    function openCobroModal(id) {
+      selectedJobForPayment = jobs.find(j => j.id === id);
+      if (!selectedJobForPayment) return;
+
+      document.getElementById('modal-cobro-monto').innerText = formatGs(selectedJobForPayment.amount);
+      document.getElementById('modal-cobro-vehiculo').innerText = `${selectedJobForPayment.marca} (${selectedJobForPayment.plate})`;
+      selectPayOption('efectivo');
+
+      openModal('modal-cobro');
+    }
+
+    function selectPayOption(opt) {
+      selectedPayChoice = opt;
+      const opts = ['efectivo', 'transferencia', 'pendiente'];
+      opts.forEach(o => {
+        const btn = document.getElementById('pay-opt-' + o);
+        if (o === opt) {
+          btn.style.border = '2px solid var(--success)';
+          btn.style.background = '#edf7ec';
+        } else {
+          btn.style.border = '1px solid var(--line)';
+          btn.style.background = '#ffffff';
+        }
+      });
+    }
+
+    function confirmarCobroModal() {
+      if (!selectedJobForPayment) return;
+      selectedJobForPayment.state = 'entregado';
+      selectedJobForPayment.payment_method = selectedPayChoice;
+
+      closeModal('modal-cobro');
+
+      if (selectedPayChoice === 'pendiente') {
+        showToast(`Vehículo ${selectedJobForPayment.plate} entregado con pago pendiente.`);
+      } else {
+        showToast(`Cobro asentado en caja: ${selectedJobForPayment.plate} (${selectedPayChoice.toUpperCase()}).`);
+      }
+
+      renderAll();
+    }
+
+    // RECEPCIÓN DE NUEVO VEHÍCULO
+    function openReceptionModal() {
+      actualizarServiciosModal();
+      openModal('modal-reception');
+    }
+
+    function actualizarServiciosModal() {
+      const tipo = document.getElementById('rec-tipo').value;
+      const select = document.getElementById('rec-servicio');
+      select.innerHTML = '';
+      SERVICES_CONFIG.filter(s => s.tipo === tipo).forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.innerText = `${s.nombre} - ${formatGs(s.precio)}`;
+        select.appendChild(opt);
+      });
+
+      const extrasContainer = document.getElementById('rec-extras');
+      extrasContainer.innerHTML = '';
+      EXTRAS_CONFIG.forEach(e => {
+        const label = document.createElement('label');
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.justifyContent = 'space-between';
+        label.style.fontSize = '12px';
+        label.style.padding = '6px 10px';
+        label.style.background = '#f9faf9';
+        label.style.borderRadius = '6px';
+        label.style.border = '1px solid #e1ebe3';
+        label.innerHTML = `
+          <span style="display:flex; align-items:center; gap:6px;">
+            <input type="checkbox" value="${e.id}" onchange="calcularTotalRecepcion()">
+            ${e.nombre}
+          </span>
+          <strong>+${formatGs(e.precio)}</strong>
+        `;
+        extrasContainer.appendChild(label);
+      });
+
+      calcularTotalRecepcion();
+    }
+
+    function calcularTotalRecepcion() {
+      const svcId = document.getElementById('rec-servicio').value;
+      const svc = SERVICES_CONFIG.find(s => s.id === svcId);
+      let total = svc ? svc.precio : 50000;
+
+      const checkedExtras = document.querySelectorAll('#rec-extras input:checked');
+      checkedExtras.forEach(cb => {
+        const extra = EXTRAS_CONFIG.find(e => e.id === cb.value);
+        if (extra) total += extra.precio;
+      });
+
+      document.getElementById('rec-total-display').innerText = formatGs(total);
+      return total;
+    }
+
+    function autoBuscarCliente(placa) {
+      const clean = placa.trim().toUpperCase();
+      const existing = jobs.find(j => j.plate === clean);
+      if (existing) {
+        document.getElementById('rec-marca').value = existing.marca || '';
+        document.getElementById('rec-cliente').value = existing.cliente_nombre || '';
+        document.getElementById('rec-telefono').value = existing.cliente_telefono || '';
+      }
+    }
+
+    function handleCrearVehiculo(e) {
+      e.preventDefault();
+      const placa = document.getElementById('rec-placa').value.trim().toUpperCase();
+      const tipo = document.getElementById('rec-tipo').value;
+      const marca = document.getElementById('rec-marca').value.trim();
+      const svcId = document.getElementById('rec-servicio').value;
+      const svc = SERVICES_CONFIG.find(s => s.id === svcId);
+      const cliente = document.getElementById('rec-cliente').value.trim();
+      const tel = document.getElementById('rec-telefono').value.trim();
+
+      const extras = [];
+      document.querySelectorAll('#rec-extras input:checked').forEach(cb => {
+        const extra = EXTRAS_CONFIG.find(ex => ex.id === cb.value);
+        if (extra) extras.push(extra.nombre);
+      });
+
+      const total = calcularTotalRecepcion();
+
+      const newJob = {
+        id: 'job-' + Date.now(),
+        plate: placa,
+        tipo: tipo,
+        marca: marca || (tipo === 'auto' ? 'Automóvil' : 'Motocicleta'),
+        service: svc ? svc.nombre : 'Lavado Completo',
+        extras: extras,
+        amount: total,
+        state: 'espera',
+        payment_method: null,
+        cliente_nombre: cliente || null,
+        cliente_telefono: tel || null,
+        tiempo_ingreso: 'Recién ingresado'
+      };
+
+      jobs.unshift(newJob);
+      closeModal('modal-reception');
+      showToast(`Vehículo ${placa} ingresado a pista con éxito.`);
+      renderAll();
+    }
+
+    // RENDER CAJA Y COBROS PENDIENTES
+    function renderCaja() {
+      const eff = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'efectivo').reduce((s, j) => s + j.amount, 0);
+      const tr = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'transferencia').reduce((s, j) => s + j.amount, 0);
+      const pendingJobs = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'pendiente');
+      const totalPend = pendingJobs.reduce((s, j) => s + j.amount, 0);
+      const totalGastos = expenses.reduce((s, e) => s + e.monto, 0);
+      const effGastos = expenses.filter(e => e.medio === 'efectivo').reduce((s, e) => s + e.monto, 0);
+      const esperado = initialCash + eff - effGastos;
+
+      document.getElementById('caja-efectivo').innerText = formatGs(eff);
+      document.getElementById('caja-transf').innerText = formatGs(tr);
+      document.getElementById('caja-pendientes').innerText = formatGs(totalPend);
+      document.getElementById('caja-gastos').innerText = formatGs(totalGastos);
+      document.getElementById('caja-esperada').innerText = formatGs(esperado);
+
+      // Tabla de cobros pendientes
+      document.getElementById('caja-pending-count').innerText = pendingJobs.length;
+      document.getElementById('caja-pending-sum').innerText = formatGs(totalPend) + ' total adeudado';
+      document.getElementById('badge-pending-count').innerText = pendingJobs.length;
+
+      const tbPend = document.getElementById('table-pending-jobs');
+      tbPend.innerHTML = '';
+      pendingJobs.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${p.plate}</strong> · ${p.marca}</td>
+          <td>${p.cliente_nombre || 'Cliente sin registrar'} ${p.cliente_telefono ? `(${p.cliente_telefono})` : ''}</td>
+          <td>${p.service}</td>
+          <td><strong style="color:var(--warning); font-family:var(--font-mono);">${formatGs(p.amount)}</strong></td>
+          <td>
+            <button class="btn-step accent" style="padding:5px 10px; width:auto; font-size:11px;" onclick="openCobroModal('${p.id}')">
+              Registrar cobro 💳
+            </button>
+          </td>
+        `;
+        tbPend.appendChild(tr);
+      });
+
+      if (pendingJobs.length === 0) {
+        tbPend.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#15803d; background:#f4faf4;">✓ Excelente: No hay cobros pendientes. Todo lo entregado fue cobrado.</td></tr>`;
+      }
+
+      // Tabla de gastos
+      const tbGastos = document.getElementById('table-gastos');
+      tbGastos.innerHTML = '';
+      expenses.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${e.concepto}</strong></td>
+          <td><span class="badge-pay" style="background:#f1f5f2; color:var(--ink-muted);">${e.categoria}</span></td>
+          <td><span style="font-size:11px; text-transform:capitalize;">${e.medio}</span></td>
+          <td><strong style="color:var(--danger); font-family:var(--font-mono);">- ${formatGs(e.monto)}</strong></td>
+        `;
+        tbGastos.appendChild(tr);
+      });
+    }
+
+    function handleRegistrarGasto(e) {
+      e.preventDefault();
+      const concepto = document.getElementById('gasto-concepto').value.trim();
+      const monto = parseInt(document.getElementById('gasto-monto').value, 10);
+      const cat = document.getElementById('gasto-cat').value;
+      const medio = document.getElementById('gasto-medio').value;
+
+      expenses.unshift({
+        id: 'exp-' + Date.now(),
+        concepto,
+        categoria: cat,
+        monto,
+        medio,
+        hora: new Date().toLocaleTimeString().substring(0, 5)
+      });
+
+      document.getElementById('form-gasto').reset();
+      showToast(`Gasto de ${formatGs(monto)} registrado en caja.`);
+      renderAll();
+    }
+
+    // ARQUEO DE CAJA Y CIERRE
+    function openCierreModal() {
+      const eff = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'efectivo').reduce((s, j) => s + j.amount, 0);
+      const effGastos = expenses.filter(e => e.medio === 'efectivo').reduce((s, e) => s + e.monto, 0);
+      const esperado = initialCash + eff - effGastos;
+
+      document.getElementById('cierre-cobros-eff').innerText = formatGs(eff);
+      document.getElementById('cierre-gastos-eff').innerText = formatGs(effGastos);
+      document.getElementById('cierre-esperado-val').innerText = formatGs(esperado);
+      document.getElementById('cierre-contado').value = esperado;
+      calcularDiferenciaArqueo(esperado);
+
+      openModal('modal-cierre');
+    }
+
+    function calcularDiferenciaArqueo(val) {
+      const contado = parseInt(val, 10) || 0;
+      const eff = jobs.filter(j => j.state === 'entregado' && j.payment_method === 'efectivo').reduce((s, j) => s + j.amount, 0);
+      const effGastos = expenses.filter(e => e.medio === 'efectivo').reduce((s, e) => s + e.monto, 0);
+      const esperado = initialCash + eff - effGastos;
+      const diff = contado - esperado;
+
+      const box = document.getElementById('cierre-diferencia-box');
+      box.style.display = 'block';
+
+      if (diff === 0) {
+        box.style.background = 'var(--success-light)';
+        box.style.color = '#14532d';
+        box.innerHTML = '<strong>✓ Arqueo exacto:</strong> La caja física coincide con el sistema.';
+      } else if (diff > 0) {
+        box.style.background = 'var(--info-light)';
+        box.style.color = '#1e3a8a';
+        box.innerHTML = `<strong>⚠️ Sobrante de caja:</strong> Hay ${formatGs(diff)} de más en mano.`;
+      } else {
+        box.style.background = 'var(--danger-light)';
+        box.style.color = '#7f1d1d';
+        box.innerHTML = `<strong>🚨 Faltante de caja:</strong> Faltan ${formatGs(Math.abs(diff))} en mano según el sistema.`;
+      }
+    }
+
+    function handleConfirmarCierre(e) {
+      e.preventDefault();
+      closeModal('modal-cierre');
+      showToast('Arqueo de caja completado y registrado en el historial.');
+    }
+
+    function openAperturaModal() {
+      const nuevo = prompt('Ingresá el saldo inicial de apertura de caja (Gs.):', initialCash);
+      if (nuevo !== null) {
+        const parsed = parseInt(nuevo.replace(/\D/g, ''), 10);
+        if (!isNaN(parsed) && parsed >= 0) {
+          initialCash = parsed;
+          showToast(`Fondo de caja inicial fijado en: ${formatGs(initialCash)}.`);
+          renderAll();
+        }
+      }
+    }
+
+    // RENDER STOCK DE INSUMOS
+    function renderStock() {
+      const tb = document.getElementById('table-stock-items');
+      tb.innerHTML = '';
+      stockItems.forEach(item => {
+        const isLow = item.stock <= item.min;
+        const pct = Math.min(100, Math.round((item.stock / (item.min * 2.5)) * 100));
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.nombre}</strong></td>
+          <td>${item.unidad}</td>
+          <td>
+            <strong>${item.stock} ${item.unidad}</strong>
+            <div class="stock-bar-wrap">
+              <div class="stock-bar-fill ${isLow ? 'low' : ''}" style="width: ${pct}%"></div>
+            </div>
+          </td>
+          <td>${item.min} ${item.unidad}</td>
+          <td>
+            ${isLow
+              ? '<span class="badge-pay" style="background:#fee2e2; color:#b91c1c;">⚠️ Stock Bajo</span>'
+              : '<span class="badge-pay efectivo">✓ Normal</span>'}
+          </td>
+          <td>${formatGs(item.costo)}</td>
+          <td>
+            <button class="btn-step accent" style="padding:4px 8px; width:auto; font-size:11px;" onclick="openCompraInsumoModal(${item.id})">
+              + Reponer
+            </button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    function openCompraInsumoModal(id) {
+      if (id) document.getElementById('compra-insumo-id').value = id;
+      openModal('modal-compra-insumo');
+    }
+
+    function openAjusteStockModal() {
+      const producto = prompt('Ajuste físico de stock por merma o medición:\nIngresá nuevo stock para Champú (Litros):', '12.5');
+      if (producto) {
+        showToast('Ajuste de inventario asentado con motivo registrado.');
+      }
+    }
+
+    function handleRegistrarCompraInsumo(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('compra-insumo-id').value, 10);
+      const cant = parseFloat(document.getElementById('compra-cantidad').value);
+      const costo = parseInt(document.getElementById('compra-costo').value, 10);
+      const pago = document.getElementById('compra-pago-tipo').value;
+
+      const item = stockItems.find(s => s.id === id);
+      if (item) {
+        item.stock += cant;
+      }
+
+      if (pago === 'efectivo') {
+        expenses.unshift({
+          id: 'exp-' + Date.now(),
+          concepto: `Compra insumo: ${item.nombre} (${cant} ${item.unidad})`,
+          categoria: 'insumos',
+          monto: costo,
+          medio: 'efectivo',
+          hora: new Date().toLocaleTimeString().substring(0, 5)
+        });
+      }
+
+      closeModal('modal-compra-insumo');
+      showToast(`Compra de ${cant} ${item.unidad} de ${item.nombre} registrada. Stock actualizado.`);
+      renderAll();
+    }
+
+    // RENDER CLIENTES
+    function renderClientes() {
+      const tb = document.getElementById('table-clientes');
+      tb.innerHTML = '';
+
+      const clientesMap = {};
+      jobs.forEach(j => {
+        if (!j.cliente_nombre) return;
+        if (!clientesMap[j.cliente_nombre]) {
+          clientesMap[j.cliente_nombre] = {
+            nombre: j.cliente_nombre,
+            telefono: j.cliente_telefono || 'Sin teléfono',
+            placas: new Set(),
+            lavados: 0,
+            saldo: 0
+          };
+        }
+        clientesMap[j.cliente_nombre].placas.add(j.plate);
+        clientesMap[j.cliente_nombre].lavados += 1;
+        if (j.payment_method === 'pendiente') {
+          clientesMap[j.cliente_nombre].saldo += j.amount;
+        }
+      });
+
+      Object.values(clientesMap).forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${c.nombre}</strong></td>
+          <td>${c.telefono}</td>
+          <td>${Array.from(c.placas).join(', ')}</td>
+          <td>${c.lavados} servicios</td>
+          <td>
+            ${c.saldo > 0
+              ? `<strong style="color:var(--danger);">${formatGs(c.saldo)}</strong>`
+              : `<span style="color:var(--success); font-weight:600;">Al día</span>`}
+          </td>
+          <td>
+            <a href="https://wa.me/595${(c.telefono || '').replace(/\D/g, '')}" target="_blank" style="text-decoration:none; font-size:12px; font-weight:600; color:#166534; background:#edf7ec; padding:4px 8px; border-radius:6px;">
+              WhatsApp 💬
+            </a>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    // EXPORTACIÓN A EXCEL / CSV
+    function exportarExcelCSV() {
+      const fecha = new Date().toISOString().split('T')[0];
+      let csv = '\uFEFF';
+      csv += 'REPORTE OPERATIVO Y ARQUEO DE CAJA - LAVAYA!\r\n';
+      csv += `Fecha:;${fecha}\r\n`;
+      csv += `Lavadero:;Lavadero Central - Ciudad del Este\r\n\r\n`;
+
+      csv += 'RESUMEN FINANCIERO\r\n';
+      csv += `Cobrado Efectivo:;${document.getElementById('caja-efectivo').innerText}\r\n`;
+      csv += `Cobrado Transferencias:;${document.getElementById('caja-transf').innerText}\r\n`;
+      csv += `Pendientes de cobro:;${document.getElementById('caja-pendientes').innerText}\r\n`;
+      csv += `Gastos del día:;${document.getElementById('caja-gastos').innerText}\r\n\r\n`;
+
+      csv += 'DETALLE DE VEHICULOS\r\n';
+      csv += 'Placa;Tipo;Marca;Servicio;Importe (Gs.);Estado;Medio Pago;Cliente\r\n';
+      jobs.forEach(j => {
+        csv += `${j.plate};${j.tipo};${j.marca};${j.service};${j.amount};${j.state};${j.payment_method || 'A cobrar'};${j.cliente_nombre || ''}\r\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lavaya-reporte-${fecha}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Planilla Excel (CSV) descargada correctamente.');
+    }
+
+    // MANEJO DE MODALES
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.add('open');
+    }
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) m.classList.remove('open');
+    }
+
+    // INICIALIZACIÓN
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+    });
+  </script>
+</body>
+</html>

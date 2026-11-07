@@ -49,7 +49,7 @@ export default function Page() {
 
         <h2>6. Derechos de acceso, rectificación, exportación y borrado</h2>
         <p>
-          El titular del lavadero puede solicitar la rectificación de sus datos, la descarga/exportación de su historial operativo o el borrado definitivo de su cuenta y registros asociados comunicándose por correo electrónico a <a href="mailto:abelnunez997@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>abelnunez997@gmail.com</a> o a través del panel de control. Los respaldos caducan y se purgan automáticamente tras 30 días de la baja.
+          El titular del lavadero puede descargar directamente sus planillas operativas para Excel (CSV) desde la sección de Caja, o solicitar la rectificación, exportación completa o eliminación definitiva de su cuenta enviando un correo electrónico a <a href="mailto:soporte@lavaya.app" style={{ color: '#1b4d2e', fontWeight: 600 }}>soporte@lavaya.app</a> o <a href="mailto:abelnunez997@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>abelnunez997@gmail.com</a>. Las eliminaciones se realizan a solicitud del titular, preservando los registros contables y fiscales exigidos por la legislación aplicable.
         </p>
       </main>
       <Footer />

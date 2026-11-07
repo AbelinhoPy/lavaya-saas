@@ -130,8 +130,9 @@ export default function ContactForm() {
         </a>
 
         <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 18, fontSize: 13, color: 'var(--muted)' }}>
-          <div><strong>Correo directo:</strong> abelnunez997@gmail.com</div>
-          <div style={{ marginTop: 4 }}><strong>Ubicación:</strong> Asunción, Paraguay</div>
+          <div><strong>Correo corporativo:</strong> contacto@lavaya.app</div>
+          <div style={{ marginTop: 4 }}><strong>Atención directa:</strong> abelnunez997@gmail.com</div>
+          <div style={{ marginTop: 4 }}><strong>Ubicación:</strong> Ciudad del Este, Paraguay</div>
         </div>
       </div>
 

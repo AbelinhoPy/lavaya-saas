@@ -38,7 +38,7 @@ export const labels: Record<JobState, string> = {
   espera: 'En espera',
   lavando: 'Lavando',
   listo: 'Listos para entrega',
-  entregado: 'Entregados y cobrados',
+  entregado: 'Entregados',
 };
 
 export function generateJobToken(): string {

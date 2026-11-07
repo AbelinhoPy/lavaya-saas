@@ -18,13 +18,13 @@ export default function Page() {
 
         <h2>1. Identificación del prestador y contacto</h2>
         <p>
-          <strong>LavaYA!</strong> es una plataforma de software como servicio (SaaS) desarrollada para la gestión operativa y de caja de lavaderos de autos y motos, fundada y operada de forma independiente por <strong>Abel</strong> (Titular y desarrollador titular), con base operativa en Asunción, República del Paraguay.
+          <strong>LavaYA!</strong> es una plataforma de software como servicio (SaaS) desarrollada para la gestión operativa y de caja de lavaderos de autos y motos, fundada y operada de forma independiente por el <strong>Ing. Abel Núñez</strong> (Titular y desarrollador titular), con base operativa en Ciudad del Este, Departamento de Alto Paraná, República del Paraguay.
         </p>
         <p>
           <strong>Canal oficial de atención al cliente y soporte:</strong><br />
-          • Correo electrónico de soporte: <a href="mailto:abelnunez997@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>abelnunez997@gmail.com</a><br />
+          • Correo electrónico de soporte: <a href="mailto:soporte@lavaya.app" style={{ color: '#1b4d2e', fontWeight: 600 }}>soporte@lavaya.app</a> (Atención directa: <a href="mailto:abelnunez997@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>abelnunez997@gmail.com</a>)<br />
           • Asistencia directa para usuarios activos a través del panel de control de la plataforma.<br />
-          • Horario de atención: Lunes a Sábado de 07:00 a 19:00 (Hora de Paraguay, UTC-3).
+          • Horario de atención: Lunes a Viernes de 08:00 a 16:00 y Sábados de 08:00 a 12:00 (Hora de Paraguay, UTC-3).
         </p>
 
         <h2>2. Comerciante de Registro (Merchant of Record - Paddle)</h2>
@@ -79,7 +79,10 @@ export default function Page() {
           Cada lavadero dispone de un entorno aislado con base de datos particionada por negocio (aislamiento estricto multi-tenant). Ningún otro usuario o lavadero puede visualizar tus vehículos, clientes, cobros o gastos.
         </p>
         <p>
-          El titular del lavadero puede solicitar en cualquier momento la exportación de sus datos históricos. Tras la cancelación definitiva de una cuenta, los datos se conservan de forma segura durante 30 días calendario por si el usuario decide reactivar su cuenta; transcurrido dicho plazo, se procede a su eliminación irreversible de los servidores principales de producción.
+          El titular del lavadero puede descargar directamente sus reportes operativos y arqueos de caja en formato compatible con Excel (CSV) desde la sección de Caja de la plataforma, o solicitar en cualquier momento la exportación completa de sus datos históricos mediante correo a <a href="mailto:abelnunez997@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>abelnunez997@gmail.com</a>.
+        </p>
+        <p>
+          La eliminación definitiva de una cuenta y sus registros operativos se realiza exclusivamente sobre solicitud expresa del titular remitida por correo electrónico a <a href="mailto:abelnunez997@gmail.com" style={{ color: '#1b4d2e', fontWeight: 600 }}>abelnunez997@gmail.com</a>. Conforme a las obligaciones contables, fiscales y comerciales vigentes, se conservarán los registros contables y comprobantes de facturación pertinentes durante los plazos legalmente exigibles.
         </p>
       </main>
       <Footer />

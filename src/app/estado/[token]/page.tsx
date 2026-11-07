@@ -25,6 +25,7 @@ export default function EstadoPorTokenPage() {
   const token = typeof params?.token === 'string' ? params.token : '';
 
   const [data, setData] = useState<PublicStatusData | null>(null);
+  const [isDemo, setIsDemo] = useState(() => Boolean(typeof token === 'string' && token.startsWith('tk_demo_')));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +44,7 @@ export default function EstadoPorTokenPage() {
           throw new Error(json.error || 'No pudimos consultar el estado.');
         }
         setData(json.data);
+        setIsDemo(Boolean(json.isDemo));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error al consultar el seguimiento.');
       } finally {
@@ -89,6 +91,60 @@ export default function EstadoPorTokenPage() {
       </header>
 
       <main style={{ flex: 1, padding: '36px 20px', maxWidth: 640, margin: '0 auto', width: '100%' }}>
+        {isDemo && (
+          <div
+            style={{
+              background: '#fffbeb',
+              border: '1px solid #fde68a',
+              borderRadius: 14,
+              padding: '16px 20px',
+              marginBottom: 20,
+              display: 'flex',
+              gap: 14,
+              alignItems: 'flex-start',
+              boxShadow: '0 2px 8px rgba(245, 158, 11, 0.08)',
+            }}
+          >
+            <span style={{ fontSize: 26, lineHeight: 1 }}>🧪</span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <strong style={{ fontSize: 13, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  VISTA DE DEMOSTRACIÓN (EJEMPLO FICTICIO)
+                </strong>
+                <span
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    background: '#fef3c7',
+                    color: '#92400e',
+                    border: '1px solid #fcd34d',
+                    padding: '2px 8px',
+                    borderRadius: 10,
+                  }}
+                >
+                  DEMO
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: 12, color: '#78350f', lineHeight: 1.5 }}>
+                Esta es una vista previa de ejemplo que ilustra lo que ve tu cliente en su celular al consultar el enlace público de seguimiento.
+              </p>
+              <p
+                style={{
+                  margin: '8px 0 0',
+                  padding: '8px 10px',
+                  background: '#fef3c7',
+                  borderRadius: 6,
+                  fontSize: 11,
+                  color: '#92400e',
+                  fontWeight: 600,
+                }}
+              >
+                ⚠️ Importante: Esta vista de prueba no consulta ni escribe datos reales en la base de datos, y no refleja los cambios locales que realices en el tablero de demostración.
+              </p>
+            </div>
+          </div>
+        )}
+
         {loading && (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--muted)' }}>
             <div style={{ fontSize: 24, marginBottom: 8 }}>🔄</div>
@@ -238,8 +294,10 @@ export default function EstadoPorTokenPage() {
             )}
 
             <div style={{ borderTop: '1px solid #edf1ea', marginTop: 28, paddingTop: 16, textAlign: 'center' }}>
-              <small style={{ color: 'var(--muted)', fontSize: 11 }}>
-                Esta es una consulta pública segura de seguimiento. No contiene importes, números de teléfono ni datos de facturación.
+              <small style={{ color: 'var(--muted)', fontSize: 11, display: 'block', lineHeight: 1.5 }}>
+                {isDemo
+                  ? 'Esta es una vista previa de demostración con fines ilustrativos. En una cuenta activa, el enlace se genera automáticamente para cada vehículo y muestra el avance en tiempo real sin requerir inicio de sesión del cliente.'
+                  : 'Esta es una consulta pública segura de seguimiento. No contiene importes, números de teléfono ni datos de facturación.'}
               </small>
             </div>
           </div>

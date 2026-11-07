@@ -166,7 +166,7 @@ export async function sendContactInquiryEmail({
   const subjectType = tipo === 'sugerencia' ? 'Sugerencia' : tipo === 'demo' ? 'Solicitud Demo' : 'Consulta';
   const senderIdentifier = nombre || contacto || 'Nuevo visitante';
 
-  const recipient = process.env.CONTACT_RECIPIENT_EMAIL || 'panky.mne@gmail.com';
+  const recipient = process.env.CONTACT_RECIPIENT_EMAIL || 'abelnunez997@gmail.com';
 
   return sendEmail({
     to: recipient,

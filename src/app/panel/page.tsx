@@ -118,6 +118,7 @@ export default async function Page() {
       title={a.business.name}
       initialJobs={jobs || []}
       initialServices={services || []}
+      userRole={a.role}
     >
       {billing}
     </Board>
